@@ -7,7 +7,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { TDesignResolver } from 'unplugin-vue-components/resolvers';
 import compression from 'vite-plugin-compression';
-import obfuscatorPlugin from 'vite-plugin-javascript-obfuscator';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
 export default ({ mode }) => {
   const src = 'src';
@@ -24,6 +24,7 @@ export default ({ mode }) => {
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia'],
         resolvers: [
+          ElementPlusResolver(),
           TDesignResolver({
             library: 'vue-next',
           }),
@@ -38,6 +39,7 @@ export default ({ mode }) => {
       }),
       Components({
         resolvers: [
+          ElementPlusResolver(),
           TDesignResolver({
             library: 'vue-next',
           }),

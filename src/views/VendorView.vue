@@ -1,6 +1,6 @@
 <script setup>
 import { useMetaTag } from '@/composables/useMetaTag';
-import VendorIndex from '@/views/pages/vendor/index.vue';
+import AdminIndex from '@/views/pages/admin/index.vue';
 
 // Set meta tags for SEO
 useMetaTag({
@@ -22,6 +22,6 @@ const prefixClass = {
 
 <template>
   <div :class="prefixClass">
-    <VendorIndex />
+    <AdminIndex />
   </div>
 </template>
