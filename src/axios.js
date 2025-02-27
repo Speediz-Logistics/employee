@@ -1,8 +1,9 @@
 import axios from 'axios';
-
 import { mapResponse } from '@/composables/useMixin';
-
+import { useCookies } from 'vue3-cookies'; // For token retrieval
 import ENV from './config/env';
+
+const { cookies } = useCookies();
 
 const http = axios.create({
   baseURL: ENV.APP_API_URL,
@@ -12,7 +13,23 @@ const http = axios.create({
   },
 });
 
-// response interceptor
+// Request interceptor to add token to headers
+http.interceptors.request.use(
+  (config) => {
+    const token = cookies.get('token'); // Retrieve token from cookies
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; // Add token to Authorization header
+    }
+    return config;
+  },
+  (error) => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor
 http.interceptors.response.use(
   ({ data, headers }) => {
     if (
@@ -23,9 +40,13 @@ http.interceptors.response.use(
     }
     return Promise.resolve(mapResponse(data));
   },
-  (e) => {
-    return console.error(e?.config.method.toUpperCase() + '  ' + e?.config.baseURL, 'net::' + e?.code);
-  },
+  (error) => {
+    console.error(
+      `${error?.config.method.toUpperCase()} ${error?.config.baseURL}`,
+      `net::${error?.code}`
+    );
+    return Promise.reject(error);
+  }
 );
 
 export default http;

@@ -42,3 +42,10 @@ dist-ssr
 
 #env
 .env
+
+.bash_history
+.bashrc
+
+.vagrant
+.vagrant.d
+.vagrant/*

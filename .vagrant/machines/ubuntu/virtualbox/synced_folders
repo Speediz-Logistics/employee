@@ -1,1 +1,1 @@
-{"virtualbox":{"/home/vagrant":{"guestpath":"/home/vagrant","hostpath":"E:/development/admin/api/speediz-vendor","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"E:/development/admin/api/speediz-vendor","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/home/ubuntu":{"guestpath":"/home/ubuntu","hostpath":"E:/development/admin/api/speediz-vendor","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"E:/development/admin/api/speediz-vendor","disabled":false,"__vagrantfile":true}}}

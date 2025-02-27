@@ -1,31 +1,6 @@
-@keyframes fadeIn {
-  from {
-    top: 20%;
-    opacity: 0;
-  }
-  to {
-    top: 100;
-    opacity: 1;
-  }
-}
-
-@-webkit-keyframes fadeIn {
-  from {
-    top: 20%;
-    opacity: 0;
-  }
-  to {
-    top: 100;
-    opacity: 1;
-  }
-}
-
 .#{$prefix}-wrapper {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
+  //position: absolute;
+  height: 100vh;
   animation: fadeIn 1000ms ease;
   -webkit-animation: fadeIn 1000ms ease;
 }

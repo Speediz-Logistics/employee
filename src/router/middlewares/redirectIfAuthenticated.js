@@ -1,10 +1,11 @@
 import { useCookies } from 'vue3-cookies';
 
-export default function auth({ next }) {
+export default function authenticated({ to, next }) {
   const { cookies } = useCookies();
-
-  if (cookies.get('accessToken') && cookies.get('tokenType')) {
-    return next();
+  const token = cookies.get('token');
+  const tokenType = cookies.get('tokenType');
+  if (token && tokenType) {
+    return next({ name: 'onboard-Screen' });
   } else {
     return next();
   }
