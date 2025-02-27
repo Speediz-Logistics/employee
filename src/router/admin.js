@@ -32,7 +32,7 @@ export default [
       {
         path: 'invoice',
         name: 'invoice',
-        component: () => import('@/views/pages/admin/screen/Invoice.vue'),
+        component: () => import('@/views/pages/admin/screen/invoice.vue'),
       },
       {
         path: 'tracking',
@@ -52,12 +52,12 @@ export default [
       {
         path: 'logout',
         name: 'logout',
-        component: () => import('@/views/pages/admin/screen/Logout.vue'),
+        component: () => import('@/views/pages/admin/screen/logout.vue'),
       },
       {
         path: 'message',
         name: 'message',
-        component: () => import('@/views/pages/admin/screen/Message.vue'),
+        component: () => import('@/views/pages/admin/screen/message.vue'),
       },
     ],
   },
