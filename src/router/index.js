@@ -6,7 +6,7 @@ const routes = [
   {
     path: '/',
     name: 'default',
-    component: () => import('@/views/HomeView.vue'),
+    component: () => import('@/layouts/default.vue'),
   },
   // Spread vendorRoutes here to integrate them
   ...AdminRoutes,

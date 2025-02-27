@@ -7,7 +7,7 @@ export default [
       {
         path: '',
         name: 'admin.index',
-        component: () => import('@/views/pages/admin/screen/dashboard.vue'),
+        component: () => import('@/views/pages/admin/index.vue'),
       },
       {
         path: 'login',
