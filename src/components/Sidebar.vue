@@ -26,13 +26,34 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link
-          to="/admin/invoice"
+        <a
+          href="#"
           class="nav-link"
-          :class="{ active: $route.path === '/admin/invoice' }">
-          <font-awesome-icon :icon="['fas', 'file-invoice-dollar']" />&nbsp;&nbsp;
-          Invoice
-        </router-link>
+          @click.prevent="toggleSubmenu('invoice')"
+        >
+          <font-awesome-icon :icon="['fas', 'file-invoice-dollar']" />
+          &nbsp;&nbsp;Invoice
+        </a>
+        <ul v-if="isSubmenuInvoiceOpen.invoice" class="nav flex-column ml-3">
+          <li class="nav-item">
+            <router-link
+              to="/admin/package-invoice"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/package-invoice' }"
+            >&nbsp;&nbsp;&nbsp;
+              Package Invoice
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/admin/vendor-invoice"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/vendor-invoice' }"
+            >&nbsp;&nbsp;&nbsp;
+              Vendor Inovice
+            </router-link>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <router-link
@@ -44,22 +65,34 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link
-          to="/admin/message"
+        <a
+          href="#"
           class="nav-link"
-          :class="{ active: $route.path === '/admin/message' }">
-          <font-awesome-icon :icon="['fas', 'message']" />&nbsp;&nbsp;
-          Message
-        </router-link>
-      </li>
-      <li class="nav-item">
-        <router-link
-          to="/admin/user-management"
-          class="nav-link"
-          :class="{ active: $route.path === '/admin/user-management' }">
-          <font-awesome-icon :icon="['fas', 'users']" />&nbsp;&nbsp;
-          User Management
-        </router-link>
+          @click.prevent="toggleSubmenu('userManagement')"
+        >
+          <font-awesome-icon :icon="['fas', 'users']" />
+          &nbsp;&nbsp;User Management
+        </a>
+        <ul v-if="isSubmenuUserOpen.userManagement" class="nav flex-column ml-3">
+          <li class="nav-item">
+            <router-link
+              to="/admin/vendor"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/vendor' }"
+            > &nbsp;&nbsp;&nbsp;
+              Vendor
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/admin/delivery"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/delivery' }"
+            >&nbsp;&nbsp;&nbsp;
+              Delivery
+            </router-link>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <router-link
@@ -93,7 +126,24 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 
+const isSubmenuInvoiceOpen = ref({
+  invoice: false,
+  userManagement: false,
+  // Add more submenu states here if needed
+});
+const isSubmenuUserOpen = ref({
+  userManagement: false,
+});
+
+function toggleSubmenu(menu) {
+  if(menu === 'invoice') {
+    isSubmenuInvoiceOpen.value.invoice = !isSubmenuInvoiceOpen.value.invoice;
+  }else if(menu === 'userManagement') {
+    isSubmenuUserOpen.value.userManagement = !isSubmenuUserOpen.value.userManagement;
+  }
+}
 </script>
 
 <style scoped>

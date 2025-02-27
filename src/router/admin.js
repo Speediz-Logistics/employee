@@ -59,6 +59,36 @@ export default [
         name: 'message',
         component: () => import('@/views/pages/admin/screen/message.vue'),
       },
+      {
+        path:'package-invoice',
+        name:'package-invoice',
+        component: () => import('@/views/pages/admin/screen/PackageInvoice.vue'),
+      },
+      {
+        path:"vendor-invoice",
+        name:"vendor-invoice",
+        component: () => import('@/views/pages/admin/screen/VendorInvoice.vue'),
+      },
+      {
+        path:"vendor",
+        name:"vendor",
+        component: () => import('@/views/pages/admin/screen/vendor/index.vue'),
+      },
+      {
+        path:"delivery",
+        name:"delivery",
+        component: () => import('@/views/pages/admin/screen/delivery/index.vue'),
+      },
+      {
+        path:"vendor-create",
+        name:"vendor-create",
+        component: () => import('@/views/pages/admin/screen/vendor/CreateVendor.vue'),
+      },
+      {
+        path:"delivery-create",
+        name:"delivery-create",
+        component: () => import('@/views/pages/admin/screen/delivery/CreateDelivery.vue'),
+      }
     ],
   },
 ];
