@@ -1,2 +1,9 @@
-$primary-color : #FFDE59;
+$primary-color : #FFBD59;
 
+.background-primary {
+  background-color: $primary-color;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

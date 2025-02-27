@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "ubuntu" do |ubuntu|
       ubuntu.vm.network "private_network", ip: "192.168.33.10"
 
-      ubuntu.vm.synced_folder "E:/development/admin/api/speediz-vendor", "/home/vagrant"
+      ubuntu.vm.synced_folder "E:/development/admin/api/speediz-vendor", "/home/ubuntu"
 
       ubuntu.vm.provision "shell", inline: <<-SCRIPT
         # Rename the vagrant user to vagrant

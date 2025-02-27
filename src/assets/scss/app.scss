@@ -29,15 +29,16 @@
 @import "misc";
 @import "icons";
 @import "images";
+//@import "animations";
 
 // Components
+//@import "layouts/home";
 
 // Override
 
 // Themes
 
 #app {
-  max-width: 1280px;
   margin: 0 auto;
   font-weight: normal;
   background-color: #fff;

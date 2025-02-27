@@ -9,6 +9,7 @@ export default function useEnv() {
     VITE_API_ACCESS_KEY,
     VITE_PREFIX,
     VITE_MAINTENANCE_MODE,
+    VITE_MAP_BOX_TOKEN,
   } = import.meta.env;
 
   return {
@@ -21,5 +22,6 @@ export default function useEnv() {
     DEV_SERVER_PORT: VITE_DEV_SERVER_PORT,
     DEV_SERVER_CLIENT_PORT: VITE_DEV_SERVER_CLIENT_PORT,
     MAINTENANCE_MODE: VITE_MAINTENANCE_MODE,
+    APP_MAP_BOX_TOKEN: VITE_MAP_BOX_TOKEN,
   };
 }

@@ -16,10 +16,12 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-regular-svg-icons": "^6.7.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@mapbox/mapbox-gl-directions": "^4.3.1",
     "@vueuse/core": "^10.6.1",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.3",
@@ -27,6 +29,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "element-plus": "^2.8.8",
+    "mapbox-gl": "^3.9.2",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "sql.js": "^1.12.0",
@@ -35,9 +38,9 @@
     "vite-plugin-javascript-obfuscator": "^3.1.0",
     "vite-plugin-obfuscator": "^1.0.5",
     "vue": "^3.3.9",
-    "vue-chartjs": "^5.3.2",
     "vue-router": "^4.2.5",
     "vue3-cookies": "^1.0.6",
+    "vue-chartjs": "^5.3.2",
     "vue3-icon": "^3.0.3"
   },
   "devDependencies": {
@@ -64,7 +67,7 @@
     "stylelint-config-recess-order": "^4.4.0",
     "stylelint-config-recommended-vue": "^1.5.0",
     "stylelint-config-standard-less": "^2.0.0",
-    "unplugin-auto-import": "^0.17.1",
+    "unplugin-auto-import": "^0.17.8",
     "unplugin-icons": "^0.17.4",
     "unplugin-vue-components": "^0.25.2",
     "vite": "^5.0.2",

@@ -1,25 +1,14 @@
 <script setup>
-import { useProductStore } from '@/store/index.js';
 
-const { all: allProduct, data } = useProductStore();
-
-const fetchProductData = async () => {
-  await allProduct();
-};
-
-onMounted(() => {
-  fetchProductData();
-});
 </script>
 
 <template>
   <div>
+    <h1>Home Page</h1>
     <ul>
-      <li v-for="(product, index) in data" :key="index">
-        <p><strong>Name:</strong> {{ product.name }}</p>
-        <p><strong>Description:</strong> {{ product.description }}</p>
-        <p><strong>Category:</strong> {{ product.category }}</p>
-        <p><strong>Price:</strong> {{ product.price }}</p>
+      <li>
+        <p>Home Page</p>
+        <p>This is the home page.</p>
       </li>
     </ul>
   </div>
