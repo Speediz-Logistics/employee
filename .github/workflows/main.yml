@@ -16,20 +16,21 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          format: html
+          format: markdownv2
           message: |
-            <b>🚀 Pull Request Notification</b>
-            <hr>
-            <b>Repository:</b> ${{ github.repository }}<br>
-            <b>PR Number:</b> #${{ github.event.pull_request.number }}<br>
-            <b>Title:</b> ${{ github.event.pull_request.title }}<br>
-            <b>Author:</b> ${{ github.event.pull_request.user.login }}<br>
-            <b>Branch:</b> <code>${{ github.event.pull_request.head.ref }}</code> → <code>${{ github.event.pull_request.base.ref }}</code><br>
-            <b>Status:</b> ${{ github.event.pull_request.state }}<br>
-            <b>Created At:</b> ${{ github.event.pull_request.created_at }}<br>
-            <b>Last Updated:</b> ${{ github.event.pull_request.updated_at }}<br>
-            <b>Files Changed:</b> ${{ github.event.pull_request.changed_files }}<br>
-            <b>Lines Added:</b> +${{ github.event.pull_request.additions }}<br>
-            <b>Lines Removed:</b> -${{ github.event.pull_request.deletions }}<br>
-            <b>Commits in PR:</b> ${{ github.event.pull_request.commits }}<br>
-            <b>🔗 <a href="${{ github.event.pull_request.html_url }}">View PR</a></b>
+            *🚀 Pull Request Notification*
+            ---------------------------------------
+            *Repository:* \`${{ github.repository }}\`
+            *PR Number:* \#${{ github.event.pull_request.number }}
+            *Title:* \`${{ github.event.pull_request.title }}\`
+            *Author:* \`${{ github.event.pull_request.user.login }}\`
+            *Branch:* \`${{ github.event.pull_request.head.ref }}\` → \`${{ github.event.pull_request.base.ref }}\`
+            *Status:* \`${{ github.event.pull_request.state }}\`
+            *Created At:* \`${{ github.event.pull_request.created_at }}\`
+            *Last Updated:* \`${{ github.event.pull_request.updated_at }}\`
+            *Files Changed:* \`${{ github.event.pull_request.changed_files }}\`
+            *Lines Added:* \+${{ github.event.pull_request.additions }}
+            *Lines Removed:* \-${{ github.event.pull_request.deletions }}
+            *Commits in PR:* \`${{ github.event.pull_request.commits }}\`
+            🔗 *[View PR](${{ github.event.pull_request.html_url }})*
+
