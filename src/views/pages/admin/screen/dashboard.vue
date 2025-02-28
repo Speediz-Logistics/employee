@@ -61,7 +61,7 @@ const chartOptions = {
       </div>
     </div>
 
-    <div class="d-flex gap-3">
+    <div class="d-flex flex-column gap-3">
       <div class="bar-chart bg-light shadow-sm mt-4">
         <h2>Total Delivery</h2>
         <BarChart />
@@ -69,9 +69,9 @@ const chartOptions = {
       <div>
         <el-table :data border class="table bg-light shadow-sm mt-4 rounded-4">
           <el-table-column prop="id" label="ID" width="50" />
-          <el-table-column prop="vendor" label="Vendor Name" width="100" />
-          <el-table-column prop="name" label="Location" width="100" />
-          <el-table-column prop="name" label="Total Delivery" width="100" />
+          <el-table-column prop="vendor" label="Vendor Name" width="280" />
+          <el-table-column prop="name" label="Location" width="180" />
+          <el-table-column prop="name" label="Total Delivery" width="180" />
           <el-table-column prop="name" label="Amount"/>
         </el-table>
       </div>
@@ -84,7 +84,7 @@ const chartOptions = {
 
 h1{
   color: #000000;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 700;
   padding-bottom: 10px;
 }
@@ -92,11 +92,11 @@ h1{
   margin-top: 20px;
   border-radius: 10px;
   padding: 10px;
-  width: 400px;
+  width: 800px;
+  height: 400px;
 }
 .table{
   border-radius: 10px;
-  width: 500px;
-  font-size: 10px;
+  font-size: 20px;
 }
 </style>
