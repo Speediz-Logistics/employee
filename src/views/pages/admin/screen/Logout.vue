@@ -7,7 +7,7 @@
       <h1 class="fw-bold mt-3">Logout</h1>
       <p>Are you sure you want to logout?</p>
       <div class="d-flex justify-content-center gap-3 mt-3">
-        <el-button type="warning">Logout</el-button>
+        <el-button type="warning" @click="handleLogout">Logout</el-button>
         <el-button @click="navigateBack">Cancel</el-button>
       </div>
     </div>
@@ -15,9 +15,16 @@
 </template>
 <script setup>
 import {useRouter} from "vue-router";
+import {useAuthStore} from "@/store/auth.js";
+const authStore = useAuthStore();
 const router = useRouter()
 const navigateBack = () => {
   router.go(-1)
+}
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push({name: 'login'})
 }
 </script>
 <style scoped>

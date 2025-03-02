@@ -1,14 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import guards from './guards';
-import AdminRoutes from './admin.js'; // Import the routes from vendor.js
+import AdminRoutes from './admin.js';
+import authenticated from "@/router/middlewares/redirectIfAuthenticated.js"; // Import the routes from vendor.js
 
 const routes = [
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/pages/admin/screen/login.vue'),
+    meta: { middlewares: [authenticated] }
+  },
+  {
     path: '/',
     name: 'default',
+    redirect: '/admin',
     component: () => import('@/layouts/default.vue'),
   },
-  // Spread vendorRoutes here to integrate them
+
+  // Integrate admin routes
   ...AdminRoutes,
 ];
 

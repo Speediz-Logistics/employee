@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import {useRouter} from "vue-router";
 const router = useRouter()
 const navigateBack = () => {
-  router.push({name: 'vendor'})
+  router.go(-1)
 }
 // do not use same name with ref
 const form = reactive({
