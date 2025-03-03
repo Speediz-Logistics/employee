@@ -1,3 +1,6 @@
+import authenticated from "@/router/middlewares/redirectIfAuthenticated.js";
+import requiredAuth from "@/router/middlewares/requiredAuth.js";
+
 export default [
   {
     path: '/admin',
@@ -7,22 +10,14 @@ export default [
       {
         path: '',
         name: 'admin.index',
-        component: () => import('@/views/pages/admin/index.vue'),
-      },
-      {
-        path: 'login',
-        name: 'login',
-        component: () => import('@/views/pages/admin/screen/login.vue'),
+        component: () => import('@/views/pages/admin/screen/dashboard.vue'),
+        meta: { middlewares: [requiredAuth] },
       },
       {
         path: 'dashboard',
         name: 'dashboard',
         component: () => import('@/views/pages/admin/screen/dashboard.vue'),
-      },
-      {
-        path: 'on-board-screen',
-        name: 'on-board-screen',
-        component: () => import('@/views/pages/admin/screen/OnBoardScreen.vue'),
+        meta: { middlewares: [requiredAuth] },
       },
       {
         path: 'vendor-list',
@@ -32,7 +27,7 @@ export default [
       {
         path: 'invoice',
         name: 'invoice',
-        component: () => import('@/views/pages/admin/screen/invoice.vue'),
+        component: () => import('@/views/pages/admin/screen/Invoice.vue'),
       },
       {
         path: 'tracking',
@@ -52,12 +47,7 @@ export default [
       {
         path: 'logout',
         name: 'logout',
-        component: () => import('@/views/pages/admin/screen/logout.vue'),
-      },
-      {
-        path: 'message',
-        name: 'message',
-        component: () => import('@/views/pages/admin/screen/message.vue'),
+        component: () => import('@/views/pages/admin/screen/Logout.vue'),
       },
       {
         path:'package-invoice',

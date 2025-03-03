@@ -5,7 +5,7 @@ export default function authenticated({ to, next }) {
   const token = cookies.get('token');
   const tokenType = cookies.get('tokenType');
   if (token && tokenType) {
-    return next({ name: 'onboard-Screen' });
+    return next({ name: 'dashboard' });
   } else {
     return next();
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column flex-shrink-0 p-3 bg-light sidebar">
+  <div v-if="isLogin" class="d-flex flex-column flex-shrink-0 p-3 bg-light sidebar">
     <!-- Logo -->
     <div class="logo mb-4 text-center">
       <img src="@/assets/images/speediz-logo.png" alt="logo project" class="img-fluid" />
@@ -127,6 +127,16 @@
 
 <script setup>
 import { ref } from 'vue';
+import {useCookies} from "vue3-cookies";
+
+const isLogin = ref(true);
+const { cookies } = useCookies();
+const token = cookies.get('token');
+const tokenType = cookies.get('tokenType');
+if (!token || !tokenType) {
+  isLogin.value = false;
+}
+
 
 const isSubmenuInvoiceOpen = ref({
   invoice: false,
