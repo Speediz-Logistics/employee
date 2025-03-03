@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/pages/admin/screen/login.vue'),
+    component: () => import('@/views/pages/admin/screen/Login.vue'),
     meta: { middlewares: [authenticated] }
   },
   {
