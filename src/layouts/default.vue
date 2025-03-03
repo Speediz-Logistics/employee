@@ -4,7 +4,7 @@
     <Sidebar />
 
     <!-- Main Content Area -->
-    <div class="flex-fill p-4">
+    <div class="flex-fill">
       <router-view />
     </div>
   </div>
