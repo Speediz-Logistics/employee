@@ -35,6 +35,11 @@ export default [
         component: () => import('@/views/pages/admin/screen/Tracking.vue'),
       },
       {
+        path: 'tracking-detail/:id',
+        name: 'tracking-detail',
+        component: () => import('@/views/pages/admin/screen/tracking-detail/[id].vue')
+      },
+      {
         path: 'user-management',
         name: 'user-management',
         component: () => import('@/views/pages/admin/screen/UserManagement.vue'),
