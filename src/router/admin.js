@@ -70,6 +70,11 @@ export default [
         component: () => import('@/views/pages/admin/screen/vendor/index.vue'),
       },
       {
+        path:"vendor-edit/:id",
+        name:"vendor-edit",
+        component: () => import('@/views/pages/admin/screen/vendor/[id].vue'),
+      },
+      {
         path:"delivery",
         name:"delivery",
         component: () => import('@/views/pages/admin/screen/delivery/index.vue'),

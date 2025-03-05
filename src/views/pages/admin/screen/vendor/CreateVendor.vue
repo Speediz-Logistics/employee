@@ -1,24 +1,37 @@
 <script setup>
 import { reactive } from 'vue'
 import {useRouter} from "vue-router";
+import{useVendorStore} from "@/store/vendor.js";
+import dayjs from "dayjs"; //import dayjs for date formatting
+
+const {createVendor} = useVendorStore()
 const router = useRouter()
 const navigateBack = () => {
   router.go(-1)
 }
 // do not use same name with ref
 const form = reactive({
-  name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
-})
+ first_name: '',
+  last_name: '',
+  business_name: '',
+  gender: '',
+  dob: '',
+  contact_number: '',
+  address: '',
+  email: '',
+  password: ''
 
-const onSubmit = () => {
-  console.log('submit!')
+})
+const onSubmit = async () => {
+  try {
+    if (form.dob) {
+      form.dob = dayjs(form.dob).format("YYYY-MM-DD"); // Convert to YYYY-MM-DD
+    }
+    await createVendor(form)
+    router.go(-1)
+  } catch (e) {
+    console.error("Error creating vendor:", e)
+  }
 }
 </script>
 
@@ -31,42 +44,43 @@ const onSubmit = () => {
   <h1>Create Vendor</h1>
   <el-form  :model="form" label-width="auto">
     <el-form-item label="Firstname" >
-      <el-input v-model="form.name" placeholder="Enter your firstname"/>
+      <el-input v-model="form.first_name" placeholder="Enter your firstname"/>
     </el-form-item>
     <el-form-item label="Lastname">
-      <el-input v-model="form.name" placeholder="Enter your lastname"/>
+      <el-input v-model="form.last_name" placeholder="Enter your lastname"/>
     </el-form-item>
     <el-form-item label="Business name">
-      <el-input v-model="form.name" placeholder="Enter your Business name"/>
+      <el-input v-model="form.business_name" placeholder="Enter your Business name"/>
     </el-form-item>
     <el-form-item label="Gender">
-      <el-select v-model="form.region" placeholder="please select your gender">
-        <el-option label="Female" value="shanghai" />
-        <el-option label="Male" value="beijing" />
-        <el-option label="Prefer not to say" value="beijing" />
+      <el-select v-model="form.gender" placeholder="please select your gender">
+        <el-option label="Female" value="female" />
+        <el-option label="Male" value="male" />
+        <el-option label="Prefer not to say" value="prefer not to say" />
       </el-select>
     </el-form-item>
     <el-form-item label="Date of Birth">
         <el-date-picker
-          v-model="form.date1"
+          v-model="form.dob"
           type="date"
+          format="YYYY-MM-DD"
           placeholder="Pick a date"
         />
     </el-form-item>
     <el-form-item label="Contact">
-      <el-input v-model="form.name" placeholder="Enter your phone number"/>
+      <el-input v-model="form.contact_number" placeholder="Enter your phone number"/>
     </el-form-item>
     <el-form-item label="Location">
-      <el-input v-model="form.name" placeholder="Sangkat, Phnom Penh"/>
+      <el-input v-model="form.address" placeholder="Sangkat, Phnom Penh"/>
     </el-form-item>
     <el-form-item label="Email">
-      <el-input v-model="form.name" placeholder="example@gmail.com"/>
+      <el-input v-model="form.email" placeholder="example@gmail.com"/>
     </el-form-item>
     <el-form-item label="Password">
-      <el-input v-model="form.name" placeholder="Enter Password"/>
+      <el-input v-model="form.password" placeholder="Enter Password"/>
     </el-form-item>
     <el-form-item class="gap-3">
-      <el-button type="primary">Create</el-button>
+      <el-button type="primary" @click="onSubmit">Create</el-button>
     </el-form-item>
 
   </el-form>
