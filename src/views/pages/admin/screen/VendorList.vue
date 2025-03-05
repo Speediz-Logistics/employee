@@ -23,15 +23,14 @@ const fetchData = async () => {
   try {
     const response = await all(params);
     tableData.value = response.data?.data; // Ensure correct data structure
-    total.value = response.data?.total;
-    currentPage.value = response.data?.current_page;
-    console.log("Vendor data:", response.data.current_page);
+    total.value = response?.data?.paginate?.total;
+    currentPage.value = response?.data?.paginate?.current_page;
   } catch (e) {
     console.error("Error fetching vendor data:", e);
   }
 };
 const handlePageChange = (page) => {
-  currentPage.value = page;
+  currentPage.value = page; // Update the local ref
   fetchData();
 };
 const handleSearch = debounce(async (query) => {
@@ -50,9 +49,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="p-4">
     <h1 class="fw-bold">Vendor List</h1>
-    <div class="d-flex justify-content-between mt-2">
+    <div class="d-flex justify-content-between mt-2 ">
       <!-- Search -->
       <div class="d-flex gap-3">
         <el-input

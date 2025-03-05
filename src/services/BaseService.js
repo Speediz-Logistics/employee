@@ -25,8 +25,8 @@ export default class BaseService {
     return this.performRequest(BaseService.METHOD_GET, '', data);
   }
 
-  show(id, data = {}) {
-    return this.performRequest(BaseService.METHOD_GET, id, data);
+  show(id, params) {
+    return this.performRequest(BaseService.METHOD_GET, id, params);
   }
 
   store(data) {
@@ -34,11 +34,11 @@ export default class BaseService {
   }
 
   update(id, data) {
-    return this.performRequest(BaseService.METHOD_PUT, id, data);
+    return this.performRequest(BaseService.METHOD_POST, id, data);
   }
 
-  destroy(id, data) {
-    return this.performRequest(BaseService.METHOD_DELETE, id, data);
+  destroy(id) {
+    return this.performRequest(BaseService.METHOD_DELETE, id);
   }
 
   performRequest(method, url, data = {}, headers = {}, requestOptions = {}) {

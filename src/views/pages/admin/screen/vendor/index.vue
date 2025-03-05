@@ -3,10 +3,11 @@ import { ref, onMounted } from "vue";
 import { useVendorStore } from "@/store/vendor.js";
 import { useDebounce } from "@/composables/useDebounce";
 import { useRouter } from "vue-router";
+import {ElMessage} from "element-plus";
 
 const vendorStore = useVendorStore();
 const router = useRouter();
-const { all } = vendorStore;
+const { all, deleteVendor } = vendorStore;
 const {debounce} = useDebounce();
 const searchQuery = ref("");
 const tableData = ref([]);
@@ -21,17 +22,17 @@ const fetchData = async () => {
   try {
     const response = await all(params);
     tableData.value = response.data?.data; // Ensure correct data structure
-    total.value = response.data?.total;
-    currentPage.value = response.data?.current_page;
-    console.log("Vendor data:", response.data.current_page);
+    total.value = response?.data?.paginate?.total;
+    currentPage.value = response?.data?.paginate?.current_page;
   } catch (e) {
     console.error("Error fetching vendor data:", e);
   }
 };
 const handlePageChange = (page) => {
-  vendorStore.setCurrentPage(page);
+  currentPage.value = page; // Update the local ref
   fetchData();
 };
+
 const handleSearch = debounce(async (query) => {
   searchQuery.value = query;
   await fetchData();
@@ -44,10 +45,33 @@ onMounted(() => {
 const handleNavigate = () => {
   router.push({name: 'vendor-create'})
 }
+const handleEdit = (id) => {
+  router.push({name: 'vendor-edit', params: {id}});
+}
+const handleDelete = async (id) => {
+  console.log("Delete vendor with ID:", id);
+  ElMessageBox.confirm("Are you sure you want to delete this vendor?", "Warning", {
+    confirmButtonText: "OK",
+    cancelButtonText: "Cancel",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        await deleteVendor(id);
+        fetchData(); // Refresh vendor list after deletion
+        ElMessage.success("Vendor deleted successfully");
+      } catch {
+        ElMessage.error("Failed to delete vendor");
+      }
+    })
+    .catch(() => {
+      ElMessage.info("Delete canceled");
+    });
+};
 
 </script>
 <template>
-  <div>
+  <div class="p-4">
     <h1 class="fw-bold">Vendor</h1>
     <div class="d-flex justify-content-between mt-2">
       <!--Search-->
@@ -77,18 +101,21 @@ const handleNavigate = () => {
         <el-table-column prop="status" label="Status" width="180" />
         <el-table-column
         >
-          <el-button>
-            <font-awesome-icon :icon="['fas', 'edit']" />
-          </el-button>
-          <el-button>
-            <font-awesome-icon :icon="['fas', 'trash']" />
-          </el-button>
+          <template #default="scope">
+            <el-button @click="handleEdit(scope.row.id)">
+              <font-awesome-icon :icon="['fas', 'edit']" />
+            </el-button>
+            <el-button @click="handleDelete(scope.row.id)">
+              <font-awesome-icon :icon="['fas', 'trash']" />
+            </el-button>
+          </template>
         </el-table-column>
       </el-table>
       <!--handlePageChange-->
       <el-pagination
         layout="prev, pager, next"
         :total="total"
+        :current-page="currentPage"
         @current-change="handlePageChange"
       />
     </div>
