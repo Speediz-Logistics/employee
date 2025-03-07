@@ -68,6 +68,16 @@ const handleDelete = async (id) => {
       ElMessage.info("Delete canceled");
     });
 };
+//handle status
+const myStatus = (status) => {
+  console.log("mystatus", status);
+  if (status === "1" || status === 1) {
+    return "Active";
+  } else {
+    return "Inactive";
+  }
+};
+
 
 </script>
 <template>
@@ -98,7 +108,13 @@ const handleDelete = async (id) => {
         <el-table-column prop="address" label="Address" width="180" />
         <el-table-column prop="gender" label="Gender" width="180" />
         <el-table-column prop="contact_number" label="Contact" width="180" />
-        <el-table-column prop="status" label="Status" width="180" />
+        <el-table-column label="Status" width="180" prop="status">
+          <template #default="scope">
+            <span v-if="scope.row.status === 1 " type="success">Active</span>
+            <span v-else type="danger">Inactive</span>
+          </template>
+        </el-table-column>
+
         <el-table-column
         >
           <template #default="scope">
