@@ -44,10 +44,23 @@ export const useDeliveryStore = defineStore('drivers', () => {
         throw e;
         }
     };
+
+
+    //edit delivery
+    const editDelivery = async (id, params) => {
+        try{
+        const response = await DeliveryService.update(id, params);
+        return response.data;
+        }catch (e) {
+        console.log(e);
+        throw e;
+        }
+    };
   return {
     all,
     deleteDelivery,
     showDelivery,
-    createDelivery
+    createDelivery,
+    editDelivery
   };
 });
