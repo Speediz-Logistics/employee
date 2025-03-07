@@ -70,9 +70,16 @@ const handleFileChange = (event, type) => {
 const onSubmit = async () => {
   try {
     const formData = new FormData();
+
+    // Format dob to 'YYYY-MM-DD' before appending
+    if (form.dob) {
+      form.dob = dayjs(form.dob).format('YYYY-MM-DD');
+    }
+
     Object.entries(form).forEach(([key, value]) => {
       if (value) formData.append(key, value);
     });
+
     await editDelivery(route.params.id, formData);
     ElMessage.success('Vendor updated successfully');
     navigateBack();
@@ -80,6 +87,7 @@ const onSubmit = async () => {
     console.error('Error updating vendor:', e);
   }
 };
+
 </script>
 
 <template>
