@@ -80,6 +80,11 @@ export default [
         component: () => import('@/views/pages/admin/screen/delivery/index.vue'),
       },
       {
+        path:"delivery-edit/:id",
+        name:"delivery-edit",
+        component: () => import('@/views/pages/admin/screen/delivery/[id].vue'),
+      },
+      {
         path:"vendor-create",
         name:"vendor-create",
         component: () => import('@/views/pages/admin/screen/vendor/CreateVendor.vue'),

@@ -18,6 +18,7 @@ const form = reactive({
   address: '',
   email: '',
   password: '',
+  status: '',
   image: '',  // For storing the image file
   image_url: '' // For storing the image URL
 });
@@ -43,6 +44,7 @@ onMounted(async () => {
     form.address = vendorData.address;
     form.email = vendorData.email;
     form.password = vendorData.password || '';
+    form.status = vendorData.status;
     form.image_url = vendorData.image || '';  // Assuming vendor has an image_url field
   } catch (error) {
     console.error('Error fetching vendor data:', error);
@@ -62,12 +64,15 @@ const onSubmit = async () => {
   const id = route.params.id;  // Get the vendor ID from route params
   try {
     const formData = new FormData();
-    // If image has changed, append the new image to the FormData
+    // If a new image has been selected, append the new image file to FormData
     if (form.image) {
       formData.append('image', form.image);  // Append the new image file
     } else if (form.image_url) {
-      formData.append('image', form.image_url); // Keep the old image URL if image hasn't changed
+      // If no new image, append the existing image URL instead
+      formData.append('image', form.image_url); // Keep the old image URL
     }
+
+    // Append the other form data
     formData.append('first_name', form.first_name);
     formData.append('last_name', form.last_name);
     formData.append('business_name', form.business_name);
@@ -77,8 +82,10 @@ const onSubmit = async () => {
     formData.append('address', form.address);
     formData.append('email', form.email);
     formData.append('password', form.password || '');
+    formData.append('status', form.status);
 
     await editVendor(id, formData);  // Pass vendor ID and form data to edit function
+    ElMessage.success('Vendor updated successfully');
     router.go(-1);
   } catch (e) {
     console.error('Error updating vendor:', e);
@@ -101,6 +108,10 @@ const handlePictureCardPreview = (file) => {
 
     <!-- Image Upload Section -->
     <div class="p-4">
+      <!-- Image Preview -->
+      <div v-if="form.image_url || dialogImageUrl" class="mb-3 profile">
+        <img :src="form.image_url || dialogImageUrl" alt="Image preview" class="w-32 h-32 object-cover" />
+      </div>
       <!-- File input tag for image upload -->
       <input
         type="file"
@@ -108,14 +119,10 @@ const handlePictureCardPreview = (file) => {
         @change="handleImageChange"
         ref="fileInput"
       />
-      <!-- Image Preview -->
-      <div v-if="form.image_url || dialogImageUrl" class="mt-3">
-        <img :src="form.image_url || dialogImageUrl" alt="Image preview" class="w-32 h-32 object-cover" />
-      </div>
 
       <!-- Image Preview Dialog -->
-      <el-dialog v-model:visible="dialogVisible">
-        <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
+      <el-dialog v-model:visible="dialogVisible" >
+        <img :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
     </div>
 
@@ -151,6 +158,12 @@ const handlePictureCardPreview = (file) => {
       <el-form-item label="Password">
         <el-input type="password" v-model="form.password" placeholder="Enter Password" />
       </el-form-item>
+      <el-form-item label="Status">
+        <el-select v-model="form.status">
+          <el-option label="Active" value="1" />
+          <el-option label="Inactive" value="0" />
+        </el-select>
+      </el-form-item>
       <el-form-item class="gap-3">
         <el-button type="primary" @click="onSubmit">Update</el-button>
       </el-form-item>
@@ -159,6 +172,11 @@ const handlePictureCardPreview = (file) => {
 </template>
 
 <style scoped>
+.profile {
+  width: 100px;
+  height: 100px;
+  border: solid 1px #000000;
+}
 h1 {
   font-size: 30px;
   text-align: center;
