@@ -57,12 +57,12 @@ export default [
       {
         path:'package-invoice',
         name:'package-invoice',
-        component: () => import('@/views/pages/admin/screen/PackageInvoice.vue'),
+        component: () => import('@/views/pages/admin/screen/invoice-package/index.vue'),
       },
       {
         path:"vendor-invoice",
         name:"vendor-invoice",
-        component: () => import('@/views/pages/admin/screen/VendorInvoice.vue'),
+        component: () => import('@/views/pages/admin/screen/invoice-vendor/index.vue'),
       },
       {
         path:"vendor",
@@ -93,6 +93,16 @@ export default [
         path:"delivery-create",
         name:"delivery-create",
         component: () => import('@/views/pages/admin/screen/delivery/CreateDelivery.vue'),
+      },
+      {
+        path:"invoice-package/:id",
+        name:"invoice-package",
+        component: () => import('@/views/pages/admin/screen/invoice-package/[id].vue'),
+      },
+      {
+        path:"invoice-vendor/:id",
+        name:"invoice-vendor",
+        component: () => import('@/views/pages/admin/screen/invoice-vendor/[id].vue'),
       }
     ],
   },

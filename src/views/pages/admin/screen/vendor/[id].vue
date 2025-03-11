@@ -18,83 +18,69 @@ const form = reactive({
   address: '',
   email: '',
   password: '',
-  status: '',
-  image: '',  // For storing the image file
+  status: 1,
+  image: null,  // For storing the image file
   image_url: '' // For storing the image URL
 });
 
 const dialogImageUrl = ref('');
 const dialogVisible = ref(false);
-const disabled = ref(false);
 
 const navigateBack = () => {
   router.go(-1);
 };
 
-onMounted(async () => {
-  const id = route.params.id;
+onMounted(
+  async () => {
   try {
-    const vendorData = await showVendor(id);  // Assuming this returns vendor data
-    form.first_name = vendorData.first_name;
-    form.last_name = vendorData.last_name;
-    form.business_name = vendorData.business_name;
-    form.gender = vendorData.gender;
-    form.dob = vendorData.dob ? dayjs(vendorData.dob).format('YYYY-MM-DD') : null;
-    form.contact_number = vendorData.contact_number;
-    form.address = vendorData.address;
-    form.email = vendorData.email;
-    form.password = vendorData.password || '';
-    form.status = vendorData.status;
-    form.image_url = vendorData.image || '';  // Assuming vendor has an image_url field
+    const vendorData = await showVendor(route.params?.id);
+    Object.assign(form, {
+      ...vendorData,
+      dob: vendorData.dob ? dayjs(vendorData.dob).format('YYYY-MM-DD') : '',
+      image_url: vendorData.image || '',
+      status: vendorData.status ? '1' : '0',
+    });
   } catch (error) {
     console.error('Error fetching vendor data:', error);
   }
 });
 
-const handleImageChange = (event) => {
-  const file = event.target.files[0];  // Get the selected file
-  if (file) {
-    form.image = file;  // Save the image file to the form data
-    // Display the selected image for preview
+const handleImageChange = (event, type) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (type === 'image') {
+    form.image = file;
     dialogImageUrl.value = URL.createObjectURL(file);
+  } else {
+    alert('Invalid file type.');
   }
 };
-
 const onSubmit = async () => {
-  const id = route.params.id;  // Get the vendor ID from route params
   try {
     const formData = new FormData();
-    // If a new image has been selected, append the new image file to FormData
-    if (form.image) {
-      formData.append('image', form.image);  // Append the new image file
-    } else if (form.image_url) {
-      // If no new image, append the existing image URL instead
-      formData.append('image', form.image_url); // Keep the old image URL
+
+    // Format dob to 'YYYY-MM-DD' before appending
+    if (form.dob) {
+      formData.append('dob', dayjs(form.dob).format('YYYY-MM-DD'));
     }
 
-    // Append the other form data
-    formData.append('first_name', form.first_name);
-    formData.append('last_name', form.last_name);
-    formData.append('business_name', form.business_name);
-    formData.append('gender', form.gender);
-    formData.append('dob', dayjs(form.dob).format('YYYY-MM-DD'));
-    formData.append('contact_number', form.contact_number);
-    formData.append('address', form.address);
-    formData.append('email', form.email);
-    formData.append('password', form.password || '');
-    formData.append('status', form.status);
+    Object.entries(form).forEach(([key, value]) => {
+      if (key !== 'image_url' && value) {
+        formData.append(key, value);
+      }
+    });
 
-    await editVendor(id, formData);  // Pass vendor ID and form data to edit function
+    if (form.image) {
+      formData.append('image', form.image);
+    }
+
+    await editVendor(route.params.id, formData);
     ElMessage.success('Vendor updated successfully');
-    router.go(-1);
+    navigateBack();
   } catch (e) {
     console.error('Error updating vendor:', e);
   }
-};
-
-const handlePictureCardPreview = (file) => {
-  dialogImageUrl.value = file.url;
-  dialogVisible.value = true;
 };
 </script>
 
@@ -106,27 +92,27 @@ const handlePictureCardPreview = (file) => {
     </el-button>
     <h1>Edit Vendor</h1>
 
-    <!-- Image Upload Section -->
-    <div class="p-4">
-      <!-- Image Preview -->
-      <div v-if="form.image_url || dialogImageUrl" class="mb-3 profile">
-        <img :src="form.image_url || dialogImageUrl" alt="Image preview" class="w-32 h-32 object-cover" />
-      </div>
-      <!-- File input tag for image upload -->
-      <input
-        type="file"
-        accept="image/*"
-        @change="handleImageChange"
-        ref="fileInput"
-      />
-
-      <!-- Image Preview Dialog -->
-      <el-dialog v-model:visible="dialogVisible" >
-        <img :src="dialogImageUrl" alt="Preview Image" />
-      </el-dialog>
-    </div>
 
     <el-form :model="form" label-width="auto">
+      <!-- Image Upload Section -->
+      <div class="p-4">
+        <!-- Image Preview -->
+        <div v-if="form.image_url || dialogImageUrl" class="mb-3 profile">
+          <img width="100" :src="form.image_url || dialogImageUrl" alt="Image preview" class="w-32 h-32 object-cover" />
+        </div>
+        <!-- File input tag for image upload -->
+        <input
+          type="file"
+          accept="image/*"
+          @change="(e) => handleImageChange(e, 'image')"
+          ref="fileInput"
+        />
+
+        <!-- Image Preview Dialog -->
+        <el-dialog v-model="dialogVisible" >
+          <img :src="dialogImageUrl" alt="Preview Image" />
+        </el-dialog>
+      </div>
       <el-form-item label="Firstname">
         <el-input v-model="form.first_name" placeholder="Enter your firstname" />
       </el-form-item>
