@@ -74,7 +74,7 @@ onMounted(() => {
       </div>
     </div>
     <div v-if="tableData" class="table">
-      <el-table :data="tableData" class="vendor-table">
+      <el-table :data="tableData" class="vendor-table  shadow-lg">
         <el-table-column prop="id" label="ID" width="50" />
         <el-table-column prop="business_name" label="Vendor Name" width="180" />
         <el-table-column prop="business_type" label="Business Type" width="180" />
@@ -100,7 +100,6 @@ onMounted(() => {
 .vendor-table {
   font-size: 20px;
   margin-top: 20px;
-  border: 1px solid #ffde59;
   border-radius: 10px;
 }
 .table{

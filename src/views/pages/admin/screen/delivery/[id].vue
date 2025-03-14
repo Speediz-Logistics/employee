@@ -29,23 +29,22 @@ const form = reactive({
 
 const dialogImageUrl = ref('');
 const dialogVisible = ref(false);
-const disabled = ref(false);
 const cvFileName = ref('');
 
 const navigateBack = () => router.go(-1);
 
 onMounted(async () => {
   try {
-    const vendorData = await showDelivery(route.params.id);
+    const deliveryData = await showDelivery(route.params.id);
     Object.assign(form, {
-      ...vendorData,
-      dob: vendorData.dob ? dayjs(vendorData.dob).format('YYYY-MM-DD') : '',
-      image_url: vendorData.image || '',
-      cv_url: vendorData.cv || '',
-      status: vendorData.status ? '1' : '0',
+      ...deliveryData,
+      dob: deliveryData.dob ? dayjs(deliveryData.dob).format('YYYY-MM-DD') : '',
+      image_url: deliveryData.image || '',
+      cv_url: deliveryData.cv || '',
+      status: deliveryData.status ? '1' : '0',
     });
-    if (vendorData.cv) {
-      cvFileName.value = vendorData.cv.split('/').pop();
+    if (deliveryData.cv) {
+      cvFileName.value = deliveryData.cv.split('/').pop();
     }
   } catch (error) {
     console.error('Error fetching vendor data:', error);
@@ -98,12 +97,6 @@ const onSubmit = async () => {
     </el-button>
     <h1>Edit Vendor</h1>
     <el-form :model="form" label-width="auto">
-      <el-form-item label="Firstname">
-        <el-input v-model="form.first_name" />
-      </el-form-item>
-      <el-form-item label="Lastname">
-        <el-input v-model="form.last_name" />
-      </el-form-item>
       <el-form-item label="Profile Image">
         <div class="d-flex">
           <div v-if="form.image_url || dialogImageUrl" class="mb-3">
@@ -115,7 +108,12 @@ const onSubmit = async () => {
           <img width="100" :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
       </el-form-item>
-
+      <el-form-item label="Firstname">
+        <el-input v-model="form.first_name" />
+      </el-form-item>
+      <el-form-item label="Lastname">
+        <el-input v-model="form.last_name" />
+      </el-form-item>
       <el-form-item label="Upload CV (PDF)">
         <div class="d-flex flex-column">
           <input type="file" accept="application/pdf" @change="(e) => handleFileChange(e, 'cv')" />

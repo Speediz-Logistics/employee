@@ -14,50 +14,52 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container py-4">
-    <h1 class="fw-bold">Dashboard</h1>
+  <div class="m-4">
+    <div class="container py-4">
+      <h1 class="fw-bold">Dashboard</h1>
 
-    <div class="row g-3 pt-3">
-      <div class="col-md-3">
-        <div class="bg-light p-3 rounded shadow-sm">
-          <p class="text-muted mb-1">Total Users</p>
-          <p class="fs-5 fw-bold">{{data?.data?.total_users}}</p>
+      <div class="row g-3 pt-3">
+        <div class="col-md-3">
+          <div class="bg-light p-3 rounded shadow-sm">
+            <p class="text-muted mb-1">Total Users</p>
+            <p class="fs-5 fw-bold">{{data?.data?.total_users}}</p>
+          </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="bg-light p-3 rounded shadow-sm">
-          <p class="text-muted mb-1">Total Packages</p>
-          <p class="fs-5 fw-bold">{{ data?.data?.total_packages }}</p>
+        <div class="col-md-3">
+          <div class="bg-light p-3 rounded shadow-sm">
+            <p class="text-muted mb-1">Total Packages</p>
+            <p class="fs-5 fw-bold">{{ data?.data?.total_packages }}</p>
+          </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="bg-light p-3 rounded shadow-sm">
-          <p class="text-muted mb-1">Total Vendor</p>
-          <p class="fs-5 fw-bold">{{ data?.data?.total_vendors }}</p>
+        <div class="col-md-3">
+          <div class="bg-light p-3 rounded shadow-sm">
+            <p class="text-muted mb-1">Total Vendor</p>
+            <p class="fs-5 fw-bold">{{ data?.data?.total_vendors }}</p>
+          </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="bg-light p-3 rounded shadow-sm">
-          <p class="text-muted mb-1">Total Sale</p>
-          <p class="fs-5 fw-bold">{{ data?.data?.total_sales }}</p>
+        <div class="col-md-3">
+          <div class="bg-light p-3 rounded shadow-sm">
+            <p class="text-muted mb-1">Total Sale</p>
+            <p class="fs-5 fw-bold">{{ data?.data?.total_sales }}</p>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div class="d-flex flex-column gap-3">
-      <div class="bar-chart bg-light shadow-sm mt-4">
-        <h2>Total Packages</h2>
-        <BarChart :data="data.data?.package_per_month" />
       </div>
 
-      <div>
-        <el-table :data="data?.data?.recent_vendors" border class="table bg-light shadow-sm mt-4 rounded-4">
-          <el-table-column prop="vendor_id" label="Vendor ID" width="180" />
-          <el-table-column prop="vendor_name" label="Vendor Name" width="380" />
-          <el-table-column prop="vendor_address" label="Address" width="480" />
-          <el-table-column prop="total_delivery" label="Total Package" width="180" />
-          <el-table-column prop="amount" label="Amount" />
-        </el-table>
+      <div class="d-flex flex-column gap-3">
+        <div class="bar-chart bg-light shadow-sm mt-4">
+          <h2>Total Packages</h2>
+          <BarChart :data="data.data?.package_per_month" />
+        </div>
+
+        <div>
+          <el-table :data="data?.data?.recent_vendors" border class="table shadow-lg mt-4 rounded-4">
+            <el-table-column prop="vendor_id" label="Vendor ID" width="180" />
+            <el-table-column prop="vendor_name" label="Vendor Name" width="380" />
+            <el-table-column prop="vendor_address" label="Address" width="480" />
+            <el-table-column prop="total_delivery" label="Total Package" width="180" />
+            <el-table-column prop="amount" label="Amount" />
+          </el-table>
+        </div>
       </div>
     </div>
   </div>
