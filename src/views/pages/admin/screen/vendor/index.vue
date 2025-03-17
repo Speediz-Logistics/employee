@@ -108,12 +108,13 @@ const myStatus = (status) => {
         <el-table-column prop="address" label="Address" width="180" />
         <el-table-column prop="gender" label="Gender" width="180" />
         <el-table-column prop="contact_number" label="Contact" width="180" />
-        <el-table-column label="Status" width="180" prop="status">
-          <template #default="scope">
-            <span v-if="scope.row.status === 1 " type="success">Active</span>
-            <span v-else type="danger">Inactive</span>
-          </template>
-        </el-table-column>
+        <el-table-column prop="status" label="Status" width="120" align="center">
+        <template #default="{ row }">
+          <el-tag :type="row.status ? 'success' : 'danger'">
+            {{ row.status ? 'Active' : 'Inactive' }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
         <el-table-column
         >
