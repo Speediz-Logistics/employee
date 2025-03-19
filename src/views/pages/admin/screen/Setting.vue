@@ -1,123 +1,203 @@
 <template>
-  <div>
-    <h1>Setting</h1>
-    <div class="d-flex gap-3">
-      <div class="profile">
-        <div>
-          <el-avatar :size="200" src="https://empty" @error="errorHandler">
-            <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png" />
-          </el-avatar>
+  <div class="settings-container">
+    <h1 class="title">Settings</h1>
+
+    <div class="settings-grid">
+      <!-- Profile Section -->
+      <el-card class="profile-card">
+        <div class="profile-content">
+          <el-avatar :size="150" :src="form.imagePreview || form.image || defaultAvatar" />
+          <input type="file" class="upload-btn" @change="handleFileUpload" accept="image/*" />
+          <div class="username">@seavyong</div>
         </div>
-        <div class="username">@username seavyong</div>
-      </div>
-      <div class="profile-info">
-        <h1>Information</h1>
-        <el-form :model="form" label-width="auto">
+      </el-card>
+
+      <!-- Information Section -->
+      <el-card class="info-card">
+        <h2>Personal Information</h2>
+        <el-form :model="form" label-width="120px">
           <el-form-item label="Name">
-            <el-input v-model="form.name" disabled />
+            <el-input v-model="form.name" placeholder="Enter your name" />
           </el-form-item>
-        </el-form>
-        <el-form :model="form" label-width="auto">
           <el-form-item label="Email">
-            <el-input v-model="form.name" disabled />
+            <el-input v-model="form.email" placeholder="Enter your email" />
           </el-form-item>
-        </el-form>
-        <el-form :model="form" label-width="auto">
           <el-form-item label="Phone">
-            <el-input v-model="form.name" disabled />
+            <el-input v-model="form.phone" placeholder="Enter your phone number" />
           </el-form-item>
         </el-form>
-      </div>
+      </el-card>
     </div>
-  </div>
-  <div class="d-flex gap-3">
-    <div class="currency">
-      <h1>Currency</h1>
-      <el-form :model="form" label-width="100">
-        <el-form-item label="From Dollar">
-          <el-input v-model="form.name" />
-        </el-form-item>
-      </el-form>
-      <el-form :model="form">
-        <el-form-item label="to Riel" label-width="100">
-          <el-input v-model="form.name" />
-        </el-form-item>
-      </el-form>
-      <el-button type="warning">Save</el-button>
+
+    <div class="settings-grid">
+      <!-- Currency Section -->
+      <el-card class="currency-card">
+        <h2>Currency</h2>
+        <el-form :model="form">
+          <el-form-item label="From Dollar">
+            <el-input model-value="1" disabled />
+          </el-form-item>
+          <el-form-item label="To Riel">
+            <el-input v-model="form.exchange_rate" placeholder="Enter exchange rate" />
+          </el-form-item>
+        </el-form>
+      </el-card>
+
+      <!-- Delivery Fee Section -->
+      <el-card class="delivery-card">
+        <h2>Delivery Fee</h2>
+        <el-form :model="form">
+          <el-form-item label="Fee">
+            <el-input v-model="form.delivery_fee" placeholder="Enter delivery fee" />
+          </el-form-item>
+        </el-form>
+      </el-card>
     </div>
-    <div class="delivery-fee">
-      <h1>Delivery Fee</h1>
-      <el-form :model="form">
-        <el-form-item label="Fee">
-          <el-input v-model="form.name" />
-        </el-form-item>
-      </el-form>
-      <el-button type="warning">Save</el-button>
+
+    <!-- Save Button -->
+    <div class="save-btn">
+      <el-button type="warning" size="large" @click="onSubmit">Save Changes</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useSettingStore } from '@/store/setting.js';
+import { ElMessage } from 'element-plus';
 
-// do not use same name with ref
 const form = reactive({
   name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
+  phone: '',
+  username: '',
+  image: null, // Change from '' to null to properly handle files
+  email: '',
+  exchange_rate: '',
+  delivery_fee: '',
 });
 
-const onSubmit = () => {
-  console.log('submit!');
+const defaultAvatar = ref('https://via.placeholder.com/150'); // Default avatar
+const settingStore = useSettingStore();
+const { all, edit } = settingStore;
+
+const fetchData = async () => {
+  const { data } = await all();
+  if (data) {
+    Object.assign(form, data);
+    if (data.image) {
+      form.image = data.image; // Keep the existing image URL if available
+    }
+  }
 };
+
+// Handle file input and update preview
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.image = file; // Store the file object
+
+    // Optional: Show a preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      form.imagePreview = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const onSubmit = async () => {
+  console.log('Form Submitted:', form);
+  const formData = new FormData();
+
+  // Append non-file fields
+  Object.entries(form).forEach(([key, value]) => {
+    if (key !== 'image' && key !== 'imagePreview') {
+      formData.append(key, value);
+    }
+  });
+
+  // Append file only if selected
+  if (form.image instanceof File) {
+    formData.append('image', form.image);
+  }
+
+  try {
+    await edit(formData);
+    ElMessage.success('Settings updated successfully');
+  } catch (error) {
+    console.error('Update failed:', error);
+    ElMessage.error('Failed to update settings');
+  }
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>
+
 <style scoped>
-.profile {
-  width: 350px;
-  height: 350px;
+.settings-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.settings-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.el-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.profile-card {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  box-shadow: #888888 1px 1px 10px;
-  margin-top: 20px;
-  border-radius: 20px;
+  text-align: center;
 }
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .username {
-  font-size: 20px;
+  font-size: 18px;
   margin-top: 10px;
+  font-weight: bold;
 }
-h1 {
-  font-size: 30px;
-  margin-bottom: 10px;
+
+.upload-btn {
+  margin-top: 10px;
+  cursor: pointer;
 }
-.profile-info {
-  width: 600px;
-  height: 350px;
-  box-shadow: #888888 1px 1px 10px;
+
+.info-card h2,
+.currency-card h2,
+.delivery-card h2 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+.save-btn {
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
-  border-radius: 20px;
-  padding: 20px;
-}
-.currency {
-  width: 350px;
-  height: 350px;
-  box-shadow: #888888 1px 1px 10px;
-  margin-top: 20px;
-  border-radius: 20px;
-  padding: 20px;
-}
-.delivery-fee {
-  width: 350px;
-  height: 350px;
-  box-shadow: #888888 1px 1px 10px;
-  margin-top: 20px;
-  border-radius: 20px;
-  padding: 20px;
 }
 </style>

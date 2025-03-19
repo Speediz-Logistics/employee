@@ -1,21 +1,22 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useVendorStore } from "@/store/vendor.js";
-import { useDebounce } from "@/composables/useDebounce";
-import { useRouter } from "vue-router";
-import {ElMessage} from "element-plus";
+import { ref, onMounted } from 'vue';
+import { useVendorStore } from '@/store/vendor.js';
+import { useDebounce } from '@/composables/useDebounce';
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
 
 const vendorStore = useVendorStore();
 const router = useRouter();
 const { all, deleteVendor } = vendorStore;
-const {debounce} = useDebounce();
-const searchQuery = ref("");
+const { debounce } = useDebounce();
+const searchQuery = ref('');
 const tableData = ref([]);
 const total = ref(0);
 const currentPage = ref(1);
+
 const fetchData = async () => {
   const params = {
-    search: searchQuery.value || "",
+    search: searchQuery.value || '',
     page: currentPage.value,
     per_page: 10,
   };
@@ -25,7 +26,7 @@ const fetchData = async () => {
     total.value = response?.data?.paginate?.total;
     currentPage.value = response?.data?.paginate?.current_page;
   } catch (e) {
-    console.error("Error fetching vendor data:", e);
+    console.error('Error fetching vendor data:', e);
   }
 };
 const handlePageChange = (page) => {
@@ -43,42 +44,40 @@ onMounted(() => {
 });
 
 const handleNavigate = () => {
-  router.push({name: 'vendor-create'})
-}
+  router.push({ name: 'vendor-create' });
+};
 const handleEdit = (id) => {
-  router.push({name: 'vendor-edit', params: {id}});
-}
+  router.push({ name: 'vendor-edit', params: { id } });
+};
 const handleDelete = async (id) => {
-  console.log("Delete vendor with ID:", id);
-  ElMessageBox.confirm("Are you sure you want to delete this vendor?", "Warning", {
-    confirmButtonText: "OK",
-    cancelButtonText: "Cancel",
-    type: "warning",
+  console.log('Delete vendor with ID:', id);
+  ElMessageBox.confirm('Are you sure you want to delete this vendor?', 'Warning', {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+    type: 'warning',
   })
     .then(async () => {
       try {
         await deleteVendor(id);
         fetchData(); // Refresh vendor list after deletion
-        ElMessage.success("Vendor deleted successfully");
+        ElMessage.success('Vendor deleted successfully');
       } catch {
-        ElMessage.error("Failed to delete vendor");
+        ElMessage.error('Failed to delete vendor');
       }
     })
     .catch(() => {
-      ElMessage.info("Delete canceled");
+      ElMessage.info('Delete canceled');
     });
 };
 //handle status
 const myStatus = (status) => {
-  console.log("mystatus", status);
-  if (status === "1" || status === 1) {
-    return "Active";
+  console.log('mystatus', status);
+  if (status === '1' || status === 1) {
+    return 'Active';
   } else {
-    return "Inactive";
+    return 'Inactive';
   }
 };
-
-
 </script>
 <template>
   <div class="p-4">
@@ -96,8 +95,7 @@ const myStatus = (status) => {
       </div>
       <div>
         <el-button type="primary" class="ml-2" @click="handleNavigate">
-          <font-awesome-icon :icon="['fas', 'plus']" />&nbsp;&nbsp;
-          Create Account
+          <font-awesome-icon :icon="['fas', 'plus']" />&nbsp;&nbsp; Create Account
         </el-button>
       </div>
     </div>
@@ -109,15 +107,14 @@ const myStatus = (status) => {
         <el-table-column prop="gender" label="Gender" width="180" />
         <el-table-column prop="contact_number" label="Contact" width="180" />
         <el-table-column prop="status" label="Status" width="120" align="center">
-        <template #default="{ row }">
-          <el-tag :type="row.status ? 'success' : 'danger'">
-            {{ row.status ? 'Active' : 'Inactive' }}
-          </el-tag>
-        </template>
-      </el-table-column>
+          <template #default="{ row }">
+            <el-tag :type="row.status ? 'success' : 'danger'">
+              {{ row.status ? 'Active' : 'Inactive' }}
+            </el-tag>
+          </template>
+        </el-table-column>
 
-        <el-table-column
-        >
+        <el-table-column>
           <template #default="scope">
             <el-button @click="handleEdit(scope.row.id)">
               <font-awesome-icon :icon="['fas', 'edit']" />
@@ -140,13 +137,13 @@ const myStatus = (status) => {
 </template>
 
 <style scoped>
-.vendor-table{
+.vendor-table {
   font-size: 20px;
   margin-top: 20px;
-  border: #FFDE59;
+  border: #ffde59;
   border-radius: 10px;
 }
-h1{
+h1 {
   font-size: 30px;
 }
 </style>
