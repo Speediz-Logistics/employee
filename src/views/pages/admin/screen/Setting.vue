@@ -12,7 +12,7 @@
           />
         </el-avatar>
       </div>
-      <div class="username">@username</div>
+      <div class="username">@username seavyong</div>
     </div>
     <div class="profile-info">
       <h1>Information</h1>
