@@ -1,18 +1,18 @@
 <script setup>
-import {Offcanvas} from "bootstrap";
-import {onMounted, onUnmounted, ref, reactive} from 'vue';
+import { Offcanvas } from 'bootstrap';
+import { onMounted, onUnmounted, ref, reactive } from 'vue';
 import { useTrackingStore } from '@/store/tracking.js';
-import { useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from 'vue-router';
 const store = useTrackingStore();
-const data = ref({})
+const data = ref({});
 const route = useRoute();
-const router = useRouter()
+const router = useRouter();
 const offcanvasRef = ref();
 let bsOffcanvas = null;
-const id = route.params.id;
+const { id } = route.params;
 
 const props = defineProps({
-  id: {type: String, default: 'offcanvas'}, // Default id as 'offcanvas'
+  id: { type: String, default: 'offcanvas' }, // Default id as 'offcanvas'
 });
 
 const isPickedUp = ref(false);
@@ -32,7 +32,7 @@ const toggle = () => {
 const showTracking = async () => {
   const response = await store.show(id);
   data.value = response.data || [];
-}
+};
 
 const isShow = () => {
   if (!document.querySelector('#' + props.id)) {
@@ -70,7 +70,13 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="offcanvasRef" class="offcanvas offcanvas-top margin-offcanvas offcanvas-info" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+  <div
+    id="offcanvas"
+    ref="offcanvasRef"
+    class="offcanvas offcanvas-top margin-offcanvas offcanvas-info"
+    tabindex="-1"
+    aria-labelledby="offcanvasLabel"
+  >
     <div class="offcanvas-body small">
       <div class="package-info p-4 bg-light rounded shadow-sm">
         <h5 class="text-primary mb-3">Package Information</h5>
@@ -134,12 +140,12 @@ defineExpose({
 .margin-offcanvas {
   margin-top: 10px;
   margin-right: 10px;
-  margin-left: 800px;
+  margin-left: 1400px;
+  max-width: 500px;
 }
 /* Optional custom styles for bottom-offcanvas */
 .offcanvas-bottom {
   top: auto;
   bottom: 0;
 }
-
 </style>

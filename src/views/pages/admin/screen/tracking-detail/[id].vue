@@ -14,11 +14,11 @@ import '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css';
 import useEnv from '@/composables/useEnv';
 import { useRoute } from 'vue-router';
 import { useTrackingStore } from '@/store/tracking.js';
-import MapOffcanvas from "@/components/MapOffcanvas.vue";
+import MapOffcanvas from '@/components/MapOffcanvas.vue';
 
 const offcanvasRef = ref(null); // Reference to MapOffcanvas
 const route = useRoute();
-const id = route.params.id;
+const { id } = route.params;
 const packages = ref({
   id: 0,
   delivery_tracking: { lat: 0, lng: 0 }, // Start location
@@ -37,8 +37,9 @@ const getPackage = async () => {
 
 onMounted(async () => {
   await getPackage();
-  const {delivery_tracking, location} = packages.value;
+  const { delivery_tracking, location } = packages.value;
   offcanvasRef.value.show();
+
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
@@ -47,20 +48,16 @@ onMounted(async () => {
     interactive: true, // Enable zooming but disable setting points manually
   });
 
-  new mapboxgl.Marker({color: 'blue'})
-    .setLngLat([delivery_tracking.lng, delivery_tracking.lat])
-    .addTo(map);
+  new mapboxgl.Marker({ color: 'blue' }).setLngLat([delivery_tracking.lng, delivery_tracking.lat]).addTo(map);
 
-  new mapboxgl.Marker({color: 'red'})
-    .setLngLat([location.lng, location.lat])
-    .addTo(map);
+  new mapboxgl.Marker({ color: 'red' }).setLngLat([location.lng, location.lat]).addTo(map);
 
   const directions = new MapboxDirections({
     accessToken: mapboxgl.accessToken,
     unit: 'metric',
     profile: 'mapbox/driving',
     alternatives: false,
-    controls: {instructions: false},
+    controls: { instructions: false },
     interactive: false, // Prevent clicking to change locations
     geometries: 'geojson',
   });
@@ -78,10 +75,17 @@ onMounted(async () => {
     directions.setDestination([location.lng, location.lat]);
   }, 1000);
 
-  directions.on('route', () => {
+  // Check if the route has been set and the layer is available
+  directions.on('route', (e) => {
     const routeLayerId = 'directions-route-line';
+
+    // Ensure the route layer exists before trying to style it
     if (map.getLayer(routeLayerId)) {
+      // Set properties for the route line
       map.setPaintProperty(routeLayerId, 'line-width', 4);
+      map.setPaintProperty(routeLayerId, 'line-color', '#FF5733'); // Custom color for the route
+    } else {
+      console.error('Route layer not found!');
     }
   });
 });

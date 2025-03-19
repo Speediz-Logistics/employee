@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useDebounce } from '@/composables/useDebounce.js';
 import { useTrackingStore } from '@/store/tracking.js';
-import {useRouter} from "vue-router";
+import { useRouter } from 'vue-router';
 
 const { debounce } = useDebounce();
 const { all } = useTrackingStore();
@@ -47,7 +47,7 @@ const viewTracking = (id) => {
   console.log('View Tracking:', id);
   router.push({
     name: 'tracking-detail',
-    params: { id: id }
+    params: { id: id },
   });
 };
 
@@ -59,18 +59,13 @@ onMounted(fetchData);
     <h1 class="fw-bold mb-4 h3">Vendor List</h1>
 
     <!-- Search Input -->
-    <el-input
-      v-model="searchQuery"
-      placeholder="Search for tracking"
-      clearable
-      class="search-box mb-4"
-    />
+    <el-input v-model="searchQuery" placeholder="Search for tracking" clearable class="search-box mb-4" />
 
     <!-- Tracking Data Table -->
     <el-table :data="trackingData" class="tracking-table" stripe>
       <el-table-column label="Driver ID" prop="id" sortable />
       <el-table-column label="Driver Name" prop="driver_name" sortable />
-      <el-table-column label="Location" prop="location" />
+      <el-table-column label="Location" prop="location.address" />
       <el-table-column label="Phone" prop="driver_phone" />
       <el-table-column label="Status">
         <template v-slot="scope">
@@ -83,9 +78,10 @@ onMounted(fetchData);
         <template v-slot="scope">
           <el-button
             v-if="scope.row.id !== null"
-            @click="viewTracking(scope.row.package_id)"
             type="primary"
-            size="small">
+            size="small"
+            @click="viewTracking(scope.row.package_id)"
+          >
             View
           </el-button>
         </template>
@@ -98,8 +94,8 @@ onMounted(fetchData);
       :page-size="perPage"
       :total="totalItems"
       layout="prev, pager, next"
-      @current-change="handlePageChange"
       class="pagination"
+      @current-change="handlePageChange"
     />
   </div>
 </template>
