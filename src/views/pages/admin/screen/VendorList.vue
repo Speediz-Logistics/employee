@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 const vendorStore = useVendorStore();
 const router = useRouter();
 const { all } = vendorStore;
-const {debounce} = useDebounce();
+const { debounce } = useDebounce();
 const searchQuery = ref("");
 const date = ref([]);
 const tableData = ref([]);
@@ -38,75 +38,113 @@ const handleSearch = debounce(async (query) => {
   await fetchData();
 }, 300);
 
-//handle date change
+// Handle date change
 const handleDateChange = (selectDate) => {
   date.value = selectDate;
   fetchData();
-}
+};
 onMounted(() => {
   fetchData();
 });
 </script>
 
 <template>
-  <div class="p-4">
-    <h1 class="fw-bold">Vendor List</h1>
-    <div class="d-flex justify-content-between mt-2 ">
+  <div class="container">
+    <h1 class="title">Vendor List</h1>
+
+    <div class="filters">
       <!-- Search -->
-      <div class="d-flex gap-3">
-        <el-input
-          v-model="searchQuery"
-          clearable
-          class="inline-input w-100"
-          placeholder="Please enter vendor name..."
-          @input="handleSearch"
-        />
-      </div>
-      <div>
-        <el-date-picker
-          v-model="date"
-          type="date"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          placeholder="Pick a date"
+      <el-input
+        v-model="searchQuery"
+        clearable
+        class="search-input"
+        placeholder="Search vendor name..."
+        @input="handleSearch"
+        prefix-icon="el-icon-search"
+      />
+
+      <!-- Date Picker -->
+      <el-date-picker
+        v-model="date"
+        type="date"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Pick a date"
+        class="date-picker"
         @change="handleDateChange"
-        />
-      </div>
-    </div>
-    <div v-if="tableData" class="table">
-      <el-table :data="tableData" class="vendor-table  shadow-lg">
-        <el-table-column prop="id" label="ID" width="50" />
-        <el-table-column prop="business_name" label="Vendor Name" width="180" />
-        <el-table-column prop="business_type" label="Business Type" width="180" />
-        <el-table-column prop="business_description" label="Business Description" width="300" />
-        <el-table-column prop="contact_number" label="Phone" width="150" />
-        <el-table-column prop="address" label="Address" width="250" />
-        <el-table-column prop="created_at" label="Date Joined" width="180" />
-        <el-table-column prop="status" label="Status" width="300" />
-      </el-table>
-      <el-pagination
-        layout="prev, pager, next"
-        :total="total"
-        @current-change="handlePageChange"
       />
     </div>
-    <div v-else>
-      <p>No data available.</p>
-    </div>
+
+    <el-table v-if="tableData.length" :data="tableData" class="vendor-table" stripe>
+      <el-table-column prop="id" label="ID" width="70" align="center" />
+      <el-table-column prop="business_name" label="Vendor Name" min-width="180" />
+      <el-table-column prop="business_type" label="Business Type" min-width="180" />
+      <el-table-column prop="business_description" label="Description" min-width="250" />
+      <el-table-column prop="contact_number" label="Phone" min-width="150" />
+      <el-table-column prop="address" label="Address" min-width="250" />
+      <el-table-column prop="created_at" label="Date Joined" min-width="180" align="center" />
+      <el-table-column prop="status" label="Status" width="120" align="center">
+        <template #default="{ row }">
+          <el-tag :type="row.status ? 'success' : 'danger'">
+            {{ row.status ? 'Active' : 'Inactive' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-empty v-else description="No vendor data available." />
+
+    <!-- Pagination -->
+    <el-pagination
+      layout="prev, pager, next"
+      :total="total"
+      class="pagination"
+      @current-change="handlePageChange"
+    />
   </div>
 </template>
 
 <style scoped>
-.vendor-table {
-  font-size: 20px;
-  margin-top: 20px;
+.container {
+  max-width: 1600px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
   border-radius: 10px;
 }
-.table{
-  max-width: 1600px;
 
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
 }
-h1 {
-  font-size: 30px;
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.search-input {
+  flex: 1;
+  max-width: 400px;
+}
+
+.date-picker {
+  min-width: 200px;
+}
+
+.vendor-table {
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 </style>
