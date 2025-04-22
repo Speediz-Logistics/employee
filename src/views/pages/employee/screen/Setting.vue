@@ -29,31 +29,6 @@
       </el-card>
     </div>
 
-    <div class="settings-grid">
-      <!-- Currency Section -->
-      <el-card class="currency-card">
-        <h2>Currency</h2>
-        <el-form :model="form">
-          <el-form-item label="From Dollar">
-            <el-input model-value="1" disabled />
-          </el-form-item>
-          <el-form-item label="To Riel">
-            <el-input v-model="form.exchange_rate" placeholder="Enter exchange rate" />
-          </el-form-item>
-        </el-form>
-      </el-card>
-
-      <!-- Delivery Fee Section -->
-      <el-card class="delivery-card">
-        <h2>Delivery Fee</h2>
-        <el-form :model="form">
-          <el-form-item label="Fee">
-            <el-input v-model="form.delivery_fee" placeholder="Enter delivery fee" />
-          </el-form-item>
-        </el-form>
-      </el-card>
-    </div>
-
     <!-- Save Button -->
     <div class="save-btn">
       <el-button type="warning" size="large" @click="onSubmit">Save Changes</el-button>
