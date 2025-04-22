@@ -1,12 +1,7 @@
 <template>
   <div class="d-flex flex-column align-content-center gap-4 content-fade-in login-form-card">
     <h1 class="text-center">Please log in your account.</h1>
-    <el-form
-      ref="formRef"
-      :model="dynamicValidateForm"
-      label-width="auto"
-      class="demo-dynamic gap-4"
-    >
+    <el-form ref="formRef" :model="dynamicValidateForm" label-width="auto" class="demo-dynamic gap-4">
       <el-form-item class prop="email" :rules="rules.email">
         <el-input
           v-model="dynamicValidateForm.email"
@@ -28,7 +23,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" v-on:click="handleLogin" class="input">Login</el-button>
+        <el-button type="primary" class="input" v-on:click="handleLogin">Login</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -93,7 +88,6 @@ const handleLogin = async () => {
     }
   });
 };
-
 </script>
 
 <style scoped>
@@ -117,8 +111,6 @@ const handleLogin = async () => {
 .el-button:active {
   opacity: 0.7;
 }
-
-
 
 .login-form-card {
   background-color: #fff;

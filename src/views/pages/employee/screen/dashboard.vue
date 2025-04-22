@@ -22,7 +22,7 @@ onMounted(() => {
         <div class="col-md-3">
           <div class="bg-light p-3 rounded shadow-sm">
             <p class="text-muted mb-1">Total Users</p>
-            <p class="fs-5 fw-bold">{{data?.data?.total_users}}</p>
+            <p class="fs-5 fw-bold">{{ data?.data?.total_users }}</p>
           </div>
         </div>
         <div class="col-md-3">
@@ -45,18 +45,19 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="d-flex flex-column gap-3">
-        <div class="bar-chart bg-light shadow-sm mt-4">
+      <div class="row">
+        <div class="col-6 bar-chart bg-light shadow-sm mt-4">
           <h2>Total Packages</h2>
           <BarChart :data="data.data?.package_per_month" />
         </div>
 
-        <div>
-          <el-table :data="data?.data?.recent_vendors" border class="table shadow-lg mt-4 rounded-4">
-            <el-table-column prop="vendor_id" label="Vendor ID" width="180" />
-            <el-table-column prop="vendor_name" label="Vendor Name" width="380" />
-            <el-table-column prop="vendor_address" label="Address" width="480" />
-            <el-table-column prop="total_delivery" label="Total Package" width="180" />
+        <div class="col-6 mt-4">
+          <div class="mb-2">Vendor List</div>
+          <el-table :data="data?.data?.recent_vendors" border class="table rounded-4">
+            <el-table-column prop="vendor_id" label="Vendor ID" />
+            <el-table-column prop="vendor_name" label="Vendor Name" />
+            <el-table-column prop="vendor_address" label="Address" />
+            <el-table-column prop="total_delivery" label="Total Package" />
             <el-table-column prop="amount" label="Amount" />
           </el-table>
         </div>
@@ -76,11 +77,8 @@ h1 {
   margin-top: 20px;
   border-radius: 10px;
   padding: 10px;
-  width: 800px;
-  height: 400px;
 }
 .table {
   border-radius: 10px;
-  font-size: 20px;
 }
 </style>
