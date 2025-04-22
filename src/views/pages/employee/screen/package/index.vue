@@ -63,6 +63,11 @@ const navigateToDetails = (id) => {
   // Assuming you have a router set up
   router.push({ name: 'package-detail', params: { id } });
 };
+
+const navigateToAdd = () => {
+  // Assuming you have a router set up
+  router.push({ name: 'package-add' });
+};
 onMounted(() => {
   fetchData();
 });
@@ -92,7 +97,9 @@ const total = computed(() => data.value.data?.total || 0);
                 </el-icon>
               </el-button>
             </div>
-            <button class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Package</button>
+            <button class="btn btn-sm btn-primary" @click="navigateToAdd">
+              <i class="bi bi-plus-lg me-1"></i> Add Package
+            </button>
           </div>
         </div>
       </div>

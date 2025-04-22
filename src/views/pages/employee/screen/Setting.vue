@@ -7,7 +7,7 @@
       <el-card class="profile-card">
         <div class="profile-content">
           <el-avatar :size="150" :src="form.imagePreview || form.image || defaultAvatar" />
-          <input type="file" class="upload-btn" @change="handleFileUpload" accept="image/*" />
+          <input type="file" class="upload-btn" accept="image/*" @change="handleFileUpload" />
           <div class="username">@seavyong</div>
         </div>
       </el-card>

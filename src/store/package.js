@@ -70,6 +70,17 @@ export const usePackageStore = defineStore('package', () => {
     return response;
   };
 
+  //searchPackageType
+  const searchPackageType = async (params) => {
+    const query = {
+      value: params,
+      key: 'package_type',
+    };
+    const response = await packageSearchService.store(query);
+    data.value = response?.data?.data || [];
+    return response;
+  };
+
   //update
   const update = async (id, data) => {
     return await packageService.update(id, data);
@@ -90,5 +101,6 @@ export const usePackageStore = defineStore('package', () => {
     searchCurrency,
     update,
     store,
+    searchPackageType,
   };
 });

@@ -7,7 +7,7 @@ import { usePackageStore } from '@/store/package.js';
 const route = useRoute();
 const packageId = route.params.id;
 
-const loading = ref(true);
+const loading = ref(false);
 const packageDetail = ref({
   sender: {},
   receiver: {},
@@ -62,7 +62,7 @@ const searchBranch = async (query) => {
   }
 };
 
-const searchPackageType = async (query) => {
+const search_package_Type = async (query) => {
   if (!query) return;
   try {
     const response = await packageStore.searchPackageType(query);
@@ -130,7 +130,7 @@ const submitUpdate = async () => {
       driver_phone: packageDetail.value.driver.phone,
       driver_telegram_contact: packageDetail.value.driver.telegram_contact,
     };
-    await packageStore.update(packageId, params);
+    await packageStore.store(params);
     ElMessage.success('Package updated successfully');
   } catch (error) {
     console.error('Error updating package:', error);
@@ -238,7 +238,7 @@ const submitUpdate = async () => {
                     placeholder="Search package type"
                     clearable
                     size="large"
-                    @keyup.enter="searchPackageType(packageDetail.package_type.name)"
+                    @keyup.enter="search_package_Type(packageDetail.package_type.name)"
                   />
                 </div>
                 <div class="input-group">
@@ -280,17 +280,6 @@ const submitUpdate = async () => {
                   <i class="el-icon-money"></i>
                   Delivery Information
                 </h5>
-                <div class="input-group">
-                  <label>Fee ($)</label>
-                  <el-input
-                    v-model="packageDetail.delivery_fee.price"
-                    placeholder="Search delivery fee"
-                    clearable
-                    prefix="$"
-                    size="large"
-                    disabled
-                  />
-                </div>
                 <div class="input-group">
                   <label>Delivery contact</label>
                   <el-input

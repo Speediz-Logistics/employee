@@ -38,6 +38,11 @@ export default [
         name: 'package-detail',
         component: () => import('@/views/pages/employee/screen/package/[id].vue'),
       },
+      {
+        path: 'package-add',
+        name: 'package-add',
+        component: () => import('@/views/pages/employee/screen/package/create.vue'),
+      },
     ],
   },
 ];
