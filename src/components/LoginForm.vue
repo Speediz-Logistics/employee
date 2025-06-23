@@ -1,55 +1,69 @@
 <template>
-  <div class="d-flex flex-column align-content-center gap-4 content-fade-in login-form-card">
-    <h1 class="text-center">Please log in your account.</h1>
-    <el-form ref="formRef" :model="dynamicValidateForm" label-width="auto" class="demo-dynamic gap-4">
-      <el-form-item class prop="email" :rules="rules.email">
-        <el-input
-          v-model="dynamicValidateForm.email"
-          placeholder="Enter your email"
-          size="large"
-          autocomplete="on"
-          clearable
-          :prefix-icon="Message"
-        />
-      </el-form-item>
-      <el-form-item prop="password" :rules="rules.password">
-        <el-input
-          v-model="dynamicValidateForm.password"
-          type="password"
-          placeholder="Enter your password"
-          show-password
-          size="large"
-          :prefix-icon="Key"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" class="input" v-on:click="handleLogin">Login</el-button>
-      </el-form-item>
-    </el-form>
+  <div class="login-form-container">
+    <div class="login-form-card content-fade-in">
+      <div class="form-header text-center mb-5">
+        <h1 class="fw-bold mb-3">Welcome Back</h1>
+        <p class="text-muted">Please log in to your account</p>
+      </div>
+
+      <el-form
+        ref="formRef"
+        :model="dynamicValidateForm"
+        label-position="top"
+        class="login-form"
+        require-asterisk-position="right"
+        @keyup.enter="handleLogin"
+      >
+        <el-form-item label="Email" prop="email" :rules="rules.email">
+          <el-input
+            v-model="dynamicValidateForm.email"
+            placeholder="Enter your email"
+            size="large"
+            autocomplete="username"
+            clearable
+            :prefix-icon="Message"
+          />
+        </el-form-item>
+
+        <el-form-item label="Password" prop="password" :rules="rules.password">
+          <el-input
+            v-model="dynamicValidateForm.password"
+            type="password"
+            placeholder="Enter your password"
+            show-password
+            size="large"
+            autocomplete="current-password"
+            :prefix-icon="Key"
+          />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" size="large" class="login-btn" :loading="authStore.loading" @click="handleLogin">
+            Login
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElLoading } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { Message, Key } from '@element-plus/icons-vue';
 import useNavigate from '@/composables/useNavigate.js';
-import { useAuthStore } from '@/store/auth'; // Import the auth store
+import { useAuthStore } from '@/store/auth';
 
 const { navigateTo } = useNavigate();
-
-// Define the router for navigation
 const router = useRouter();
-const remember = ref(false);
+const authStore = useAuthStore();
 
-// Define the form data using reactive
 const dynamicValidateForm = reactive({
   email: '',
   password: '',
 });
 
-// Define the rules for form validation
 const rules = {
   email: [
     { required: true, message: 'Please input email address', trigger: 'blur' },
@@ -61,66 +75,124 @@ const rules = {
   ],
 };
 
-// Reference for form validation
 const formRef = ref(null);
 
-// Use the Auth Store
-const authStore = useAuthStore();
-
-// Handle login action
 const handleLogin = async () => {
-  formRef.value.validate(async (valid) => {
-    if (valid) {
-      try {
-        // Attempt to log in using the auth store
-        await authStore.login({
-          email: dynamicValidateForm.email,
-          password: dynamicValidateForm.password,
-        });
-        // Redirect to the dashboard page after login
-        router.push({ name: 'dashboard' }); // Change 'dashboard' to your actual dashboard route name
-      } catch (error) {
-        // Show error message on login failure
-        ElMessage.error(error.response?.data?.message || 'Login failed. Please try again.');
-      }
-    } else {
-      ElMessage.error('Please fill in the form correctly');
-    }
-  });
+  try {
+    const valid = await formRef.value.validate();
+    if (!valid) return;
+
+    const loadingInstance = ElLoading.service({
+      lock: true,
+      text: 'Logging in...',
+      background: 'rgba(0, 0, 0, 0.7)',
+    });
+
+    await authStore.login({
+      email: dynamicValidateForm.email,
+      password: dynamicValidateForm.password,
+    });
+
+    loadingInstance.close();
+    router.push({ name: 'dashboard' });
+  } catch (error) {
+    ElMessage.error(error.response?.data?.message || 'Login failed. Please try again.');
+  }
 };
 </script>
 
-<style scoped>
-.input {
-  width: 100%;
-}
-
-.el-form-item .el-input,
-.el-form-item .el-button {
-  width: 100%;
-}
-
-.el-button {
-  background: #ffbd59;
+<style scoped lang="scss">
+.login-form-container {
+  display: flex;
   justify-content: center;
   align-items: center;
-  border: none;
-  cursor: pointer;
-}
-
-.el-button:active {
-  opacity: 0.7;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #f8f9fa;
 }
 
 .login-form-card {
   background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border: 0.5px solid #ffbd59;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  width: 500px;
-  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 189, 89, 0.3);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.form-header {
+  h1 {
+    color: #333;
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+}
+
+.login-form {
+  .el-form-item {
+    margin-bottom: 1.5rem;
+
+    :deep(.el-form-item__label) {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+  }
+}
+
+.login-btn {
+  width: 100%;
+  background-color: #ffbd59;
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: darken(#ffbd59, 10%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.content-fade-in {
+  animation: content-fade-in 0.6s ease-in-out;
+}
+
+@keyframes content-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 576px) {
+  .login-form-card {
+    padding: 1.5rem;
+    border: none;
+    box-shadow: none;
+  }
+
+  .form-header {
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
 }
 </style>

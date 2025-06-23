@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { usePackageStore } from '@/store/package.js';
+import { ArrowLeft, Search } from '@element-plus/icons-vue';
+import Multiselect from 'vue-multiselect';
 
 const route = useRoute();
 const packageId = route.params.id;
@@ -19,60 +21,124 @@ const packageDetail = ref({
 });
 const packageStore = usePackageStore();
 
-// Search functions for each entity
-const searchVendor = async (query) => {
-  if (!query) return;
+const options = ref({
+  vendor: [],
+  branch: [],
+  package_type: [],
+  driver: [],
+});
+const searchOption = async (key, search) => {
   try {
-    const response = await packageStore.searchVendor(query);
-    packageDetail.value.sender = {
-      ...packageDetail.value.sender,
-      ...response.data,
+    loading.value = true;
+    const query = {
+      key: key,
+      search: search || '',
     };
+    const response = await packageStore.searchOptions(query);
+    options.value[key] = response.data;
+
+    // If we have a specific item selected and it exists in the new options
+    if (packageDetail.value[key]?.id) {
+      const selectedItem = options.value[key].find((item) => item.id === packageDetail.value[key].id);
+      if (selectedItem) {
+        // Update the local data with the fresh information
+        packageDetail.value[key] = {
+          ...packageDetail.value[key],
+          ...selectedItem,
+          phone: selectedItem.contact_number || selectedItem.phone,
+          name: selectedItem.name || `${selectedItem.first_name} ${selectedItem.last_name}`,
+        };
+      }
+    }
   } catch (error) {
-    console.error('Error searching vendor:', error);
-    ElMessage.error('Failed to search vendor');
+    console.error('Error fetching options:', error);
+    ElMessage.error('Failed to load options');
+  } finally {
+    loading.value = false;
   }
 };
 
-const searchReceiver = async (query) => {
-  if (!query) return;
-  try {
-    const response = await packageStore.searchReceiver(query);
-    packageDetail.value.receiver = {
-      ...packageDetail.value.receiver,
-      ...response.data,
-    };
-  } catch (error) {
-    console.error('Error searching receiver:', error);
-    ElMessage.error('Failed to search receiver');
-  }
+// Search functions for each entity
+const searchVendor = async (query) => {
+  await searchOption('vendor', query);
 };
 
 const searchBranch = async (query) => {
-  if (!query) return;
+  await searchOption('branch', query);
+};
+
+const searchDriver = async (query) => {
+  await searchOption('driver', query);
+};
+
+const searchPackageType = async (query) => {
+  await searchOption('package_type', query);
+};
+
+// Selection handlers
+const onVendorSelect = (selected) => {
+  packageDetail.value.sender = {
+    id: selected.id,
+    name: selected.name || `${selected.first_name} ${selected.last_name}`,
+    phone: selected.contact_number || selected.phone,
+  };
+  // Optionally fetch additional details if needed
+  fetchVendorDetails(selected.id);
+};
+
+const onBranchSelect = (selected) => {
+  packageDetail.value.branch = {
+    id: selected.id,
+    name: selected.name,
+    phone: selected.phone,
+    address: selected.address,
+  };
+  fetchBranchDetails(selected.id);
+};
+
+const onDriverSelect = (selected) => {
+  packageDetail.value.driver = {
+    id: selected.id,
+    name: selected.name || `${selected.first_name} ${selected.last_name}`,
+    phone: selected.phone,
+    telegram_contact: selected.telegram_contact,
+  };
+  fetchDriverDetails(selected.id);
+};
+
+const onPackageTypeSelect = (selected) => {
+  packageDetail.value.package_type = {
+    id: selected.id,
+    name: selected.name,
+    description: selected.description,
+  };
+  fetchPackageTypeDetails(selected.id);
+};
+
+// Detailed fetch functions
+const fetchVendorDetails = async (id) => {
+  try {
+    const response = await packageStore.searchVendor(id);
+    packageDetail.value.sender = {
+      ...packageDetail.value.sender,
+      ...response.data,
+      phone: response.data.contact_number || packageDetail.value.sender.phone,
+    };
+  } catch (error) {
+    console.error('Error fetching vendor details:', error);
+  }
+};
+
+const fetchBranchDetails = async (query) => {
   try {
     const response = await packageStore.searchBranch(query);
     packageDetail.value.branch = {
       ...packageDetail.value.branch,
       ...response.data,
+      phone: response.data.contact_number || packageDetail.value.branch.phone,
     };
   } catch (error) {
-    console.error('Error searching branch:', error);
-    ElMessage.error('Failed to search branch');
-  }
-};
-
-const search_package_Type = async (query) => {
-  if (!query) return;
-  try {
-    const response = await packageStore.searchPackageType(query);
-    packageDetail.value.package_type = {
-      ...packageDetail.value.package_type,
-      ...response.data,
-    };
-  } catch (error) {
-    console.error('Error searching package type:', error);
-    ElMessage.error('Failed to search package type');
+    console.error('Error fetching branch details:', error);
   }
 };
 
@@ -90,34 +156,55 @@ const searchDeliveryFee = async (query) => {
   }
 };
 
-const searchDriver = async (query) => {
-  if (!query) return;
+const fetchDriverDetails = async (id) => {
   try {
-    const response = await packageStore.searchDriver(query);
+    const response = await packageStore.searchDriver(id);
     packageDetail.value.driver = {
       ...packageDetail.value.driver,
       ...response.data,
+      name: `${response.data.first_name} ${response.data.last_name}`,
+      phone: response.data.contact_number || packageDetail.value.driver.phone,
     };
   } catch (error) {
-    console.error('Error searching driver:', error);
-    ElMessage.error('Failed to search driver');
+    console.error('Error fetching driver details:', error);
   }
 };
 
-//submit update update
+const fetchPackageTypeDetails = async (id) => {
+  try {
+    const response = await packageStore.searchPackageType(id);
+    packageDetail.value.package_type = {
+      ...packageDetail.value.package_type,
+      ...response.data,
+    };
+  } catch (error) {
+    console.error('Error fetching package type details:', error);
+  }
+};
+
+// Custom option formatters for Multiselect
+const formatVendor = (option) => `${option.id} - ${option.name}`;
+const formatBranch = (option) => `${option.id} - ${option.name}`;
+const formatDriver = (option) => `${option.id} - ${option.name}`;
+const formatPackageType = (option) => `${option.id} - ${option.name}`;
+
+// Submit update
 const submitUpdate = async () => {
   try {
     const params = {
+      sender_id: packageDetail.value.sender.id,
       sender_name: packageDetail.value.sender.name,
       sender_phone: packageDetail.value.sender.phone,
 
       receiver_name: packageDetail.value.receiver.name,
       receiver_phone: packageDetail.value.receiver.phone,
 
+      branch_id: packageDetail.value.branch.id,
       branch_name: packageDetail.value.branch.name,
       branch_phone: packageDetail.value.branch.phone,
       branch_address: packageDetail.value.branch.address,
 
+      package_type_id: packageDetail.value.package_type.id,
       package_type_name: packageDetail.value.package_type.name,
       package_type_description: packageDetail.value.package_type.description,
 
@@ -126,6 +213,7 @@ const submitUpdate = async () => {
 
       delivery_fee_price: packageDetail.value.delivery_fee.price,
 
+      driver_id: packageDetail.value.driver.id,
       driver_name: packageDetail.value.driver.name,
       driver_phone: packageDetail.value.driver.phone,
       driver_telegram_contact: packageDetail.value.driver.telegram_contact,
@@ -137,6 +225,13 @@ const submitUpdate = async () => {
     ElMessage.error('Failed to update package');
   }
 };
+
+onMounted(() => {
+  searchOption('vendor');
+  searchOption('branch');
+  searchOption('driver');
+  searchOption('package_type');
+});
 </script>
 
 <template>
@@ -148,10 +243,10 @@ const submitUpdate = async () => {
 
       <template #default>
         <div class="detail-card">
-          <div class="card-header">
-            <h3 class="card-title">Package Details</h3>
-            <div class="status-badge">
-              <el-tag type="success" size="large">{{ packageDetail.package.status }}</el-tag>
+          <div class="header-container">
+            <el-button class="ms-3" :icon="ArrowLeft" @click="$router.push({ name: 'package' })">Back</el-button>
+            <div class="card-header">
+              <h3 class="card-title">Package Create</h3>
             </div>
           </div>
 
@@ -161,68 +256,117 @@ const submitUpdate = async () => {
               <div class="detail-section">
                 <h5 class="section-title">
                   <i class="el-icon-user"></i>
-                  Sender/Receiver Information
+                  Vendor/Receiver Information
                 </h5>
-                <div class="input-group">
-                  <label>Sender Phone</label>
-                  <el-input
-                    v-model="packageDetail.sender.phone"
-                    placeholder="Search by sender phone"
-                    clearable
-                    size="large"
-                    @keyup.enter="searchVendor(packageDetail.sender.phone)"
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Sender name</label>
-                  <el-input
-                    v-model="packageDetail.sender.name"
-                    placeholder="Sender name"
-                    clearable
-                    size="large"
-                    disabled
-                  />
-                </div>
+                <el-card class="card-container">
+                  <div class="mb-3">
+                    <label class="form-label">Vendor</label>
+                    <multiselect
+                      v-model="packageDetail.sender"
+                      :options="options.vendor"
+                      :custom-label="formatVendor"
+                      :loading="loading"
+                      placeholder="Search vendor by ID or name"
+                      label="name"
+                      track-by="id"
+                      @search-change="searchVendor"
+                      @select="onVendorSelect"
+                    >
+                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
+                      <template v-slot:option="{ option }">
+                        <div class="option__desc">
+                          <span class="option__title">{{ option.id }} | </span>
+                          <span class="option__small">{{ option.name }}</span>
+                        </div>
+                      </template>
+                    </multiselect>
+                  </div>
 
-                <div class="input-group">
-                  <label>Receiver Phone</label>
-                  <el-input
-                    v-model="packageDetail.receiver.phone"
-                    placeholder="Search by receiver phone"
-                    clearable
-                    size="large"
-                    @keyup.enter="searchReceiver(packageDetail.receiver.phone)"
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Receiver name</label>
-                  <el-input v-model="packageDetail.receiver.name" placeholder="Receiver name" clearable size="large" />
-                </div>
-
-                <div class="input-group">
-                  <label>Branch Phone</label>
-                  <el-input
-                    v-model="packageDetail.branch.phone"
-                    placeholder="Search by branch phone"
-                    clearable
-                    size="large"
-                    @keyup.enter="searchBranch(packageDetail.branch.phone)"
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Branch Name</label>
-                  <el-input v-model="packageDetail.branch.name" placeholder="Branch" clearable size="large" disabled />
-                </div>
-                <div class="input-group">
-                  <label>Destination</label>
-                  <el-input
-                    v-model="packageDetail.branch.address"
-                    placeholder="Destination"
-                    clearable
-                    size="large"
-                    disabled
-                  />
-                </div>
+                  <div class="mb-3">
+                    <label class="form-label">Vendor name</label>
+                    <el-input
+                      v-model="packageDetail.sender.name"
+                      placeholder="Vendor name"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                </el-card>
+                <el-card class="card-container">
+                  <div class="input-group mb-3">
+                    <label>Receiver Phone</label>
+                    <el-input
+                      v-model="packageDetail.receiver.phone"
+                      placeholder="Receiver phone"
+                      clearable
+                      size="large"
+                    />
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Receiver name</label>
+                    <el-input
+                      v-model="packageDetail.receiver.name"
+                      placeholder="Receiver name"
+                      clearable
+                      size="large"
+                    />
+                  </div>
+                </el-card>
+                <el-card class="card-container">
+                  <div class="mb-3">
+                    <label class="form-label">Branch</label>
+                    <multiselect
+                      v-model="packageDetail.branch"
+                      :options="options.branch"
+                      :custom-label="formatBranch"
+                      :loading="loading"
+                      placeholder="Search branch by ID or name"
+                      label="name"
+                      track-by="id"
+                      @search-change="searchBranch"
+                      @select="onBranchSelect"
+                    >
+                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
+                      <template v-slot:option="{ option }">
+                        <div class="option__desc">
+                          <span class="option__title">{{ option.id }} | </span>
+                          <span class="option__small">{{ option.name }}</span>
+                        </div>
+                      </template>
+                    </multiselect>
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Branch Phone</label>
+                    <el-input
+                      v-model="packageDetail.branch.phone"
+                      placeholder="Branch phone"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Branch Name</label>
+                    <el-input
+                      v-model="packageDetail.branch.name"
+                      placeholder="Branch name"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label>Destination</label>
+                    <el-input
+                      v-model="packageDetail.branch.address"
+                      placeholder="Destination"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                </el-card>
               </div>
 
               <!-- Package Details -->
@@ -231,47 +375,65 @@ const submitUpdate = async () => {
                   <i class="el-icon-box"></i>
                   Package Details
                 </h5>
-                <div class="input-group">
-                  <label>Package type</label>
-                  <el-input
-                    v-model="packageDetail.package_type.name"
-                    placeholder="Search package type"
-                    clearable
-                    size="large"
-                    @keyup.enter="search_package_Type(packageDetail.package_type.name)"
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Description</label>
-                  <el-input
-                    v-model="packageDetail.package_type.description"
-                    placeholder="Description"
-                    clearable
-                    size="large"
-                    disabled
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Package price ($)</label>
-                  <el-input
-                    v-model="packageDetail.package.price"
-                    placeholder="Package price"
-                    clearable
-                    prefix="$"
-                    size="large"
-                    @keyup.enter="searchDeliveryFee(packageDetail.package.price)"
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Package price (Riel)</label>
-                  <el-input
-                    v-model="packageDetail.package.price_khr"
-                    placeholder="Package price in KHR"
-                    clearable
-                    size="large"
-                    disabled
-                  />
-                </div>
+                <el-card class="card-container">
+                  <div class="input-group mb-3">
+                    <label>Package type</label>
+                    <multiselect
+                      v-model="packageDetail.package_type"
+                      :options="options.package_type"
+                      :custom-label="formatPackageType"
+                      :loading="loading"
+                      placeholder="Search package type"
+                      label="name"
+                      track-by="id"
+                      @search-change="searchPackageType"
+                      @select="onPackageTypeSelect"
+                    >
+                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
+                      <template v-slot:option="{ option }">
+                        <div class="option__desc">
+                          <span class="option__title">{{ option.id }} | </span>
+                          <span class="option__small">{{ option.name }}</span>
+                        </div>
+                      </template>
+                    </multiselect>
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Description</label>
+                    <el-input
+                      v-model="packageDetail.package_type.description"
+                      placeholder="Description"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                </el-card>
+                <el-card class="card-container">
+                  <div class="input-group mb-3">
+                    <label>Package price ($)</label>
+                    <el-input
+                      v-model="packageDetail.package.price"
+                      placeholder="Package price"
+                      clearable
+                      prefix="$"
+                      size="large"
+                      type="number"
+                      @keyup.enter="searchDeliveryFee(packageDetail.package.price)"
+                    />
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Package price (Riel)</label>
+                    <el-input
+                      v-model="packageDetail.package.price_khr"
+                      placeholder="Package price in KHR"
+                      clearable
+                      type="number"
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                </el-card>
               </div>
 
               <!-- Delivery Information -->
@@ -280,46 +442,72 @@ const submitUpdate = async () => {
                   <i class="el-icon-money"></i>
                   Delivery Information
                 </h5>
-                <div class="input-group">
-                  <label>Delivery contact</label>
-                  <el-input
-                    v-model="packageDetail.driver.phone"
-                    placeholder="Search by driver phone"
-                    clearable
-                    size="large"
-                    @keyup.enter="searchDriver(packageDetail.driver.phone)"
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Delivery Name</label>
-                  <el-input
-                    v-model="packageDetail.driver.name"
-                    placeholder="Delivery contact"
-                    clearable
-                    size="large"
-                    disabled
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Delivery telegram</label>
-                  <el-input
-                    v-model="packageDetail.driver.telegram_contact"
-                    placeholder="Delivery telegram"
-                    clearable
-                    size="large"
-                    disabled
-                  />
-                </div>
-                <div class="input-group">
-                  <label>Note</label>
-                  <el-input
-                    v-model="packageDetail.package.note"
-                    placeholder="Note"
-                    clearable
-                    type="textarea"
-                    size="large"
-                  />
-                </div>
+                <el-card class="card-container">
+                  <div class="input-group mb-3">
+                    <label>Driver</label>
+                    <multiselect
+                      v-model="packageDetail.driver"
+                      :options="options.driver"
+                      :custom-label="formatDriver"
+                      :loading="loading"
+                      placeholder="Search driver by ID or name"
+                      label="name"
+                      track-by="id"
+                      @search-change="searchDriver"
+                      @select="onDriverSelect"
+                    >
+                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
+                      <template v-slot:option="{ option }">
+                        <div class="option__desc">
+                          <span class="option__title">{{ option.id }} | </span>
+                          <span class="option__small">{{ option.name }}</span>
+                        </div>
+                      </template>
+                    </multiselect>
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Driver Name</label>
+                    <el-input
+                      v-model="packageDetail.driver.name"
+                      placeholder="Driver name"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Driver Phone</label>
+                    <el-input
+                      v-model="packageDetail.driver.phone"
+                      placeholder="Driver phone"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Driver Telegram</label>
+                    <el-input
+                      v-model="packageDetail.driver.telegram_contact"
+                      placeholder="Driver telegram"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                </el-card>
+                <el-card class="card-container">
+                  <div class="input-group mb-3">
+                    <label>Note</label>
+                    <el-input
+                      v-model="packageDetail.package.note"
+                      placeholder="Note"
+                      clearable
+                      type="textarea"
+                      size="large"
+                    />
+                  </div>
+                </el-card>
               </div>
             </div>
           </div>
@@ -338,6 +526,20 @@ const submitUpdate = async () => {
 </template>
 
 <style scoped>
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Adjust the gap between items as needed */
+}
+
+.card-header {
+  margin: 0; /* Remove default margins if needed */
+}
+
+.card-title {
+  margin: 0; /* Remove default margins if needed */
+}
+
 .package-detail-container {
   padding: 24px;
   transition: margin-left 0.3s ease;
@@ -461,5 +663,9 @@ const submitUpdate = async () => {
   .action-buttons .el-button {
     width: 100%;
   }
+}
+
+.card-container {
+  margin-bottom: 20px;
 }
 </style>

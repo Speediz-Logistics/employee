@@ -37,7 +37,6 @@ import loginForm from '@/components/LoginForm.vue';
 
 .login-form {
   flex: 1; // Takes remaining space
-  max-width: 400px;
   z-index: 3;
 }
 

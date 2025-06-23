@@ -1,5 +1,6 @@
 import packageService from '@/services/PackageService.js';
 import packageSearchService from '@/services/PackageSearchService.js';
+import packageOptionService from '@/services/PackageOptionService.js';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -81,6 +82,12 @@ export const usePackageStore = defineStore('package', () => {
     return response;
   };
 
+  const searchOptions = async (params) => {
+    const response = await packageOptionService.store(params);
+    data.value = response?.data?.data || [];
+    return response;
+  };
+
   //update
   const update = async (id, data) => {
     return await packageService.update(id, data);
@@ -102,5 +109,6 @@ export const usePackageStore = defineStore('package', () => {
     update,
     store,
     searchPackageType,
+    searchOptions,
   };
 });

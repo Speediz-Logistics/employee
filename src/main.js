@@ -20,7 +20,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 library.add(fas, far);
 Chart.register(...registerables);
 
-
 const app = createApp(App);
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.use(router);
