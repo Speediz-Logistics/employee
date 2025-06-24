@@ -43,6 +43,16 @@ export default [
         name: 'package-add',
         component: () => import('@/views/pages/employee/screen/package/create.vue'),
       },
+      {
+        path: 'package-invoice',
+        name: 'package-invoice',
+        component: () => import('@/views/pages/employee/screen/invoice-package/index.vue'),
+      },
+      {
+        path: 'vendor-invoice',
+        name: 'vendor-invoice',
+        component: () => import('@/views/pages/employee/screen/invoice-vendor/index.vue'),
+      },
     ],
   },
 ];

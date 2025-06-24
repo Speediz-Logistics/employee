@@ -1,17 +1,17 @@
-import invoiceVendorService from '@/services/InvoiceVendorService.js';
+import invoicePackageService from '@/services/InvoicePackageService.js';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-export const useInvoiceVendorStore = defineStore('invoiceVendors', () => {
+export const useInvoicePackageStore = defineStore('invoicePackages', () => {
   const data = ref([]);
   const total = ref(0);
   const currentPage = ref(1);
 
   const all = async (params) => {
-    const response = await invoiceVendorService.index(params);
+    const response = await invoicePackageService.index(params);
     data.value = response?.data?.data || [];
-    total.value = response?.data?.pagination?.total || 0;
-    currentPage.value = response?.data?.pagination?.current_page || 1;
+    total.value = response?.data?.paginate?.total || 0;
+    currentPage.value = response?.data?.paginate?.current_page || 1;
     return response;
   };
 
@@ -22,11 +22,11 @@ export const useInvoiceVendorStore = defineStore('invoiceVendors', () => {
   const setCurrentPage = (page) => {
     currentPage.value = page;
   };
-  //show invoiceVendor
-  const show = async (id) => {
+  //show invoicePackage
+  const showInvoicePackage = async (id) => {
     try {
-      const response = await invoiceVendorService.show(id);
-      return response;
+      const response = await invoicePackageService.show(id);
+      return response.data;
     } catch (e) {
       console.log(e);
       throw e;
@@ -34,7 +34,7 @@ export const useInvoiceVendorStore = defineStore('invoiceVendors', () => {
   };
   return {
     all,
-    show,
+    showInvoicePackage,
     setTotal,
     setCurrentPage,
   };

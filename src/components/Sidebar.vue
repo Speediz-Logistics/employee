@@ -22,6 +22,17 @@
           <span>Package Management</span>
         </el-menu-item>
 
+        <el-sub-menu index="invoice">
+          <template #title>
+            <el-icon>
+              <Document />
+            </el-icon>
+            <span>Invoice</span>
+          </template>
+          <el-menu-item index="/employee/package-invoice" class="nav-item">Package Invoice</el-menu-item>
+          <el-menu-item index="/employee/vendor-invoice" class="nav-item">Vendor Invoice</el-menu-item>
+        </el-sub-menu>
+
         <el-menu-item index="/employee/setting" class="nav-item">
           <el-icon>
             <Setting />
@@ -46,7 +57,7 @@
 </template>
 
 <script setup>
-import { Clock, Goods, Setting, SwitchButton } from '@element-plus/icons-vue';
+import { Clock, Goods, Setting, SwitchButton, Document } from '@element-plus/icons-vue';
 </script>
 
 <style scoped>
