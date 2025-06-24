@@ -8,7 +8,6 @@
         <div class="profile-content">
           <el-avatar :size="150" :src="form.imagePreview || form.image || defaultAvatar" />
           <input type="file" class="upload-btn" accept="image/*" @change="handleFileUpload" />
-          <div class="username">@seavyong</div>
         </div>
       </el-card>
 
@@ -16,14 +15,17 @@
       <el-card class="info-card">
         <h2>Personal Information</h2>
         <el-form :model="form" label-width="120px">
-          <el-form-item label="Name">
-            <el-input v-model="form.name" placeholder="Enter your name" />
-          </el-form-item>
           <el-form-item label="Email">
-            <el-input v-model="form.email" placeholder="Enter your email" />
+            <el-input v-model="form.email" disabled />
+          </el-form-item>
+          <el-form-item label="Name">
+            <el-input v-model="form.first_name" placeholder="Enter your First Name" />
+          </el-form-item>
+          <el-form-item label="Name">
+            <el-input v-model="form.last_name" placeholder="Enter your Last Name" />
           </el-form-item>
           <el-form-item label="Phone">
-            <el-input v-model="form.phone" placeholder="Enter your phone number" />
+            <el-input v-model="form.contact_number" placeholder="Enter your phone number" />
           </el-form-item>
         </el-form>
       </el-card>
@@ -42,13 +44,11 @@ import { useSettingStore } from '@/store/setting.js';
 import { ElMessage } from 'element-plus';
 
 const form = reactive({
-  name: '',
-  phone: '',
-  username: '',
+  first_name: '',
+  last_name: '',
+  contact_number: '',
   image: null, // Change from '' to null to properly handle files
   email: '',
-  exchange_rate: '',
-  delivery_fee: '',
 });
 
 const defaultAvatar = ref('https://via.placeholder.com/150'); // Default avatar

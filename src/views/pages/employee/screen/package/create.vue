@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { usePackageStore } from '@/store/package.js';
 import { ArrowLeft, Search } from '@element-plus/icons-vue';
 import Multiselect from 'vue-multiselect';
 
+const router = useRouter();
 const route = useRoute();
 const packageId = route.params.id;
 
@@ -219,7 +220,10 @@ const submitUpdate = async () => {
       driver_telegram_contact: packageDetail.value.driver.telegram_contact,
     };
     await packageStore.store(params);
+
     ElMessage.success('Package updated successfully');
+    // Redirect to package list or detail page
+    router.push({ name: 'package' });
   } catch (error) {
     console.error('Error updating package:', error);
     ElMessage.error('Failed to update package');
