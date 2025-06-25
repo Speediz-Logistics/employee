@@ -7,7 +7,7 @@
       </div>
 
       <!-- Navigation -->
-      <el-menu :default-active="$route.path" class="w-100" router>
+      <el-menu :default-active="$route.path" class="w-100 bg-light" router>
         <el-menu-item index="/employee/dashboard" class="nav-item">
           <el-icon>
             <Clock />
@@ -47,11 +47,6 @@
           <span>Logout</span>
         </el-menu-item>
       </el-menu>
-    </div>
-    <!-- Profile Section -->
-    <div class="d-flex flex-column align-items-center border-top pt-3 mt-auto">
-      <img src="@/assets/logo.svg" alt="Profile" class="rounded-circle border border-warning w-25 mb-2" />
-      <div class="small fw-medium text-muted">laseavyong@gmail.com</div>
     </div>
   </aside>
 </template>
