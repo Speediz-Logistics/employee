@@ -114,7 +114,7 @@ export default ({ mode }) => {
     },
 
     build: {
-      target: 'es2015',
+      target: 'es2020',
       sourcemap: false,
       chunkSizeWarningLimit: 2000,
       reportCompressedSize: false,
