@@ -183,6 +183,36 @@ const fetchPackageTypeDetails = async (id) => {
   }
 };
 
+const previewImage = ref(null);
+const packageImageFile = ref(null);
+
+const handleImageUpload = (file) => {
+  // Validate file type
+  const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (!validTypes.includes(file.type)) {
+    ElMessage.error('Only JPG/PNG images are allowed');
+    return false;
+  }
+
+  // Validate file size (2MB max)
+  const maxSize = 2 * 1024 * 1024; // 2MB
+  if (file.size > maxSize) {
+    ElMessage.error('Image size should not exceed 2MB');
+    return false;
+  }
+
+  // Create preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImage.value = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  // Store the file for submission
+  packageImageFile.value = file;
+  return true;
+};
+
 // Custom option formatters for Multiselect
 const formatVendor = (option) => `${option.id} - ${option.name}`;
 const formatBranch = (option) => `${option.id} - ${option.name}`;
@@ -192,34 +222,50 @@ const formatPackageType = (option) => `${option.id} - ${option.name}`;
 // Submit update
 const submitUpdate = async () => {
   try {
-    const params = {
-      sender_id: packageDetail.value.sender.id,
-      sender_name: packageDetail.value.sender.name,
-      sender_phone: packageDetail.value.sender.phone,
+    const formData = new FormData();
 
-      receiver_name: packageDetail.value.receiver.name,
-      receiver_phone: packageDetail.value.receiver.phone,
+    // Sender information
+    formData.append('sender_id', packageDetail.value.sender.id);
+    formData.append('sender_name', packageDetail.value.sender.name);
+    formData.append('sender_phone', packageDetail.value.sender.phone);
 
-      branch_id: packageDetail.value.branch.id,
-      branch_name: packageDetail.value.branch.name,
-      branch_phone: packageDetail.value.branch.phone,
-      branch_address: packageDetail.value.branch.address,
+    // Receiver information
+    formData.append('receiver_name', packageDetail.value.receiver.name);
+    formData.append('receiver_phone', packageDetail.value.receiver.phone);
+    formData.append('receiver_address', packageDetail.value.receiver.address);
+    formData.append('receiver_lat', packageDetail.value.receiver.latitude);
+    formData.append('receiver_lng', packageDetail.value.receiver.longitude);
 
-      package_type_id: packageDetail.value.package_type.id,
-      package_type_name: packageDetail.value.package_type.name,
-      package_type_description: packageDetail.value.package_type.description,
+    // Branch information
+    formData.append('branch_id', packageDetail.value.branch.id);
+    formData.append('branch_name', packageDetail.value.branch.name);
+    formData.append('branch_phone', packageDetail.value.branch.phone);
+    formData.append('branch_address', packageDetail.value.branch.address);
 
-      package_price: packageDetail.value.package.price,
-      package_price_khr: packageDetail.value.package.price_khr,
+    // Package type information
+    formData.append('package_type_id', packageDetail.value.package_type.id);
+    formData.append('package_type_name', packageDetail.value.package_type.name);
+    formData.append('package_type_description', packageDetail.value.package_type.description);
 
-      delivery_fee_price: packageDetail.value.delivery_fee.price,
+    // Package image (assuming this is a file)
+    if (packageImageFile.value) {
+      formData.append('package_image', packageImageFile.value);
+    }
 
-      driver_id: packageDetail.value.driver.id,
-      driver_name: packageDetail.value.driver.name,
-      driver_phone: packageDetail.value.driver.phone,
-      driver_telegram_contact: packageDetail.value.driver.telegram_contact,
-    };
-    await packageStore.store(params);
+    // Package pricing
+    formData.append('package_price', packageDetail.value.package.price);
+    formData.append('package_price_khr', packageDetail.value.package.price_khr);
+
+    // Delivery fee
+    formData.append('delivery_fee_price', packageDetail.value.delivery_fee.price);
+
+    // Driver information
+    formData.append('driver_id', packageDetail.value.driver.id);
+    formData.append('driver_name', packageDetail.value.driver.name);
+    formData.append('driver_phone', packageDetail.value.driver.phone);
+    formData.append('driver_telegram_contact', packageDetail.value.driver.telegram_contact);
+
+    await packageStore.store(formData);
 
     ElMessage.success('Package updated successfully');
     // Redirect to package list or detail page
@@ -316,58 +362,31 @@ onMounted(() => {
                       size="large"
                     />
                   </div>
-                </el-card>
-                <el-card class="card-container">
-                  <div class="mb-3">
-                    <label class="form-label">Branch</label>
-                    <multiselect
-                      v-model="packageDetail.branch"
-                      :options="options.branch"
-                      :custom-label="formatBranch"
-                      :loading="loading"
-                      placeholder="Search branch by ID or name"
-                      label="name"
-                      track-by="id"
-                      @search-change="searchBranch"
-                      @select="onBranchSelect"
-                    >
-                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
-                      <template v-slot:option="{ option }">
-                        <div class="option__desc">
-                          <span class="option__title">{{ option.id }} | </span>
-                          <span class="option__small">{{ option.name }}</span>
-                        </div>
-                      </template>
-                    </multiselect>
-                  </div>
                   <div class="input-group mb-3">
-                    <label>Branch Phone</label>
+                    <label>Receiver Address</label>
                     <el-input
-                      v-model="packageDetail.branch.phone"
-                      placeholder="Branch phone"
+                      v-model="packageDetail.receiver.address"
+                      placeholder="Receiver Address"
                       clearable
                       size="large"
-                      disabled
                     />
                   </div>
                   <div class="input-group mb-3">
-                    <label>Branch Name</label>
+                    <label>Receiver Latitude</label>
                     <el-input
-                      v-model="packageDetail.branch.name"
-                      placeholder="Branch name"
+                      v-model="packageDetail.receiver.latitude"
+                      placeholder="Receiver Latitude"
                       clearable
                       size="large"
-                      disabled
                     />
                   </div>
-                  <div class="input-group">
-                    <label>Destination</label>
+                  <div class="input-group mb-3">
+                    <label>Receiver Longitude</label>
                     <el-input
-                      v-model="packageDetail.branch.address"
-                      placeholder="Destination"
+                      v-model="packageDetail.receiver.longitude"
+                      placeholder="Receiver Longitude"
                       clearable
                       size="large"
-                      disabled
                     />
                   </div>
                 </el-card>
@@ -433,6 +452,61 @@ onMounted(() => {
                       placeholder="Package price in KHR"
                       clearable
                       type="number"
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                </el-card>
+
+                <el-card class="card-container">
+                  <div class="mb-3">
+                    <label class="form-label">Branch</label>
+                    <multiselect
+                      v-model="packageDetail.branch"
+                      :options="options.branch"
+                      :custom-label="formatBranch"
+                      :loading="loading"
+                      placeholder="Search branch by ID or name"
+                      label="name"
+                      track-by="id"
+                      @search-change="searchBranch"
+                      @select="onBranchSelect"
+                    >
+                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
+                      <template v-slot:option="{ option }">
+                        <div class="option__desc">
+                          <span class="option__title">{{ option.id }} | </span>
+                          <span class="option__small">{{ option.name }}</span>
+                        </div>
+                      </template>
+                    </multiselect>
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Branch Phone</label>
+                    <el-input
+                      v-model="packageDetail.branch.phone"
+                      placeholder="Branch phone"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                  <div class="input-group mb-3">
+                    <label>Branch Name</label>
+                    <el-input
+                      v-model="packageDetail.branch.name"
+                      placeholder="Branch name"
+                      clearable
+                      size="large"
+                      disabled
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label>Destination</label>
+                    <el-input
+                      v-model="packageDetail.branch.address"
+                      placeholder="Destination"
+                      clearable
                       size="large"
                       disabled
                     />
@@ -510,6 +584,38 @@ onMounted(() => {
                       type="textarea"
                       size="large"
                     />
+                  </div>
+                </el-card>
+                <el-card class="card-container">
+                  <div class="input-group mb-3">
+                    <label>Package Image</label>
+                    <el-upload
+                      class="upload-demo"
+                      action="#"
+                      :show-file-list="false"
+                      :auto-upload="false"
+                      accept="image/jpeg,image/png"
+                      :on-change="handleImageUpload"
+                      :before-upload="(file) => !handleImageUpload(file)"
+                    >
+                      <el-button size="small" type="primary">Select Image</el-button>
+                      <template #tip>
+                        <div class="el-upload__tip">Only JPG/PNG files are allowed (max 2MB)</div>
+                      </template>
+                    </el-upload>
+                  </div>
+                  <img v-if="previewImage" :src="previewImage" alt="Package Preview" class="preview-image" />
+                  <div v-if="previewImage" class="mt-2">
+                    <el-button
+                      size="small"
+                      type="danger"
+                      @click="
+                        previewImage = null;
+                        packageImageFile = null;
+                      "
+                    >
+                      Remove Image
+                    </el-button>
                   </div>
                 </el-card>
               </div>
