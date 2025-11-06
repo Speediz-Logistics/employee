@@ -312,6 +312,7 @@ onMounted(() => {
                   <div class="mb-3">
                     <label class="form-label">Vendor</label>
                     <multiselect
+                      id="vendor"
                       v-model="packageDetail.sender"
                       :options="options.vendor"
                       :custom-label="formatVendor"
@@ -319,12 +320,22 @@ onMounted(() => {
                       placeholder="Search vendor by ID or name"
                       label="name"
                       track-by="id"
+                      :append-to-body="true"
+                      open-direction="bottom"
+                      :searchable="true"
+                      :internal-search="false"
+                      :clear-on-select="false"
+                      :close-on-select="false"
+                      :options-limit="300"
+                      :limit="3"
+                      :show-no-results="false"
+                      :hide-selected="true"
                       @search-change="searchVendor"
                       @select="onVendorSelect"
                     >
-                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }}</template>
+                      <template v-slot:singleLabel="{ option }"> {{ option.id }} - {{ option.name }} </template>
                       <template v-slot:option="{ option }">
-                        <div class="option__desc">
+                        <div class="option__desc z-9">
                           <span class="option__title">{{ option.id }} | </span>
                           <span class="option__small">{{ option.name }}</span>
                         </div>
@@ -777,5 +788,11 @@ onMounted(() => {
 
 .card-container {
   margin-bottom: 20px;
+  overflow: visible !important;
+  position: relative;
+}
+
+.multiselect__content-wrapper {
+  z-index: 9999 !important;
 }
 </style>
